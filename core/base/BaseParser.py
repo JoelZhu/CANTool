@@ -12,23 +12,28 @@ class BaseParser(ABC):
     """CAN 信号解析器抽象基类"""
 
     # 注册表：Format -> Parser类
-    _registry: Dict[Format, Type['BaseParser']] = {}
+    _parser_dict: Dict[Format, 'BaseParser'] = {}
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
         # 要求子类必须实现 define_format，用其返回值作为注册键
         # 这里通过实例化一个临时对象来获取 Format（如果你不希望实例化，可改为类属性）
         # 推荐改为类属性：在子类中直接定义 format = Format.INTEL
+        instance: cls
         try:
             # 方式1：调用无参构造获取 Format（要求子类构造器无参）
-            fmt = cls().define_format()
+            instance = cls()
+            fmt = instance.define_format()
         except Exception:
             # 方式2：使用类变量，更安全
-            raise TypeError(f"{cls.__name__} 必须通过 define_format() 返回 Format")
+            raise TypeError(f"Create instance of {cls.__name__} or get it's format failed.")
 
-        if fmt in cls._registry:
-            raise ValueError(f"Format {fmt} 已被 {cls._registry[fmt].__name__} 注册")
-        cls._registry[fmt] = cls
+        if instance is None:
+            raise ValueError(f"Create instance of {cls.__name__} failed.")
+        if fmt in cls._parser_dict:
+            raise ValueError(f"Format {fmt} already registered by {cls._parser_dict[fmt].__name__}.")
+
+        cls._parser_dict[fmt] = instance
 
     @abstractmethod
     def define_format(self) -> Format:
@@ -46,7 +51,7 @@ class BaseParser(ABC):
         value = 0
         for i, pos in enumerate(positions):
             if pos < 0 or pos >= total_bits:
-                raise ValueError(f"位索引 {pos} 超出报文范围 (0-{total_bits - 1})")
+                raise ValueError(f"Bit position: {pos} out of range (0-{total_bits - 1})")
             byte_idx = pos // 8
             bit_idx = pos % 8
             if data_bytes[byte_idx] & (1 << bit_idx):
@@ -64,8 +69,12 @@ class BaseParser(ABC):
             importlib.import_module(f"{FORMAT_PKG_NAME}.{module_name}")
 
     @classmethod
-    def get_parser(cls, format: Format) -> 'BaseParser':
-        parser_cls = cls._registry.get(format)
-        if parser_cls is None:
-            raise ValueError(f"未注册的 Format: {format}")
-        return parser_cls()
+    def get_parser(cls, formatter: Format) -> 'BaseParser':
+        parser = cls._parser_dict.get(formatter)
+        if parser is None:
+            raise ValueError(f"Unregistered format: {formatter}.")
+        return parser
+
+    @classmethod
+    def get_all_parsers(cls) -> Dict[Format, 'BaseParser']:
+        return cls._parser_dict
