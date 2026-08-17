@@ -58,6 +58,42 @@ class BaseParser(ABC):
                 value |= (1 << i)
         return value
 
+    def generate_message(self, raw_value: int, start_bit: int, bit_length: int, total_bytes: int) -> list:
+        """根据总线值，生成报文"""
+        # 检查 raw_value 是否超出范围
+        max_val = (1 << bit_length) - 1
+        if raw_value < 0 or raw_value > max_val:
+            raise ValueError(f"Raw value: {raw_value} out of range for {bit_length} bits (0-{max_val}).")
+
+        # 初始化全零字节列表
+        data = [0] * total_bytes
+
+        # 获取位位置列表（由子类实现）
+        positions = self.get_bit_positions(start_bit, bit_length)
+
+        # 写入每一位
+        for i, pos in enumerate(positions):
+            # 检查位位置是否超出总字节数范围
+            if pos < 0 or pos >= total_bytes * 8:
+                raise ValueError(f"Bit position {pos} exceeds total bits ({total_bytes * 8}).")
+
+            # 获取 raw_value 的第 i 位（从 LSB 开始）
+            bit = (raw_value >> i) & 1
+            if bit:
+                byte_idx = pos // 8
+                bit_idx = pos % 8
+                data[byte_idx] |= (1 << bit_idx)
+        return data
+
+    def get_all_valid_bit_positions(self, bytes_length: int, start_bit: int, bit_length: int) -> list:
+        """从报文中提取原始整数值"""
+        positions = self.get_bit_positions(start_bit, bit_length)
+        total_bits = bytes_length * 8
+        for i, pos in enumerate(positions):
+            if pos < 0 or pos >= total_bits:
+                raise ValueError(f"Bit position: {pos} out of range (0-{total_bits - 1})")
+        return positions
+
     @classmethod
     def auto_register_formats(cls):
         """
