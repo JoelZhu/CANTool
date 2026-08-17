@@ -174,7 +174,7 @@ class MainWindow(QMainWindow):
         MessageParser.init_parser()
 
         # 添加图标
-        icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'app_icon.ico')
+        icon_path = resource_path('app_icon.ico')
         if os.path.exists(icon_path):
             self.setWindowIcon(QIcon(icon_path))
 
@@ -199,11 +199,23 @@ class MainWindow(QMainWindow):
         self.ui.tabWidget.addTab(self.matrix_page, "Matrix")
 
 
+def resource_path(relative_path):
+    """获取资源文件的绝对路径，兼容开发环境和 PyInstaller 打包后"""
+    if hasattr(sys, '_MEIPASS'):
+        # 打包后，资源文件被解压到 _MEIPASS 目录
+        base_path = sys._MEIPASS
+    else:
+        # 开发环境，使用当前文件所在目录
+        base_path = os.path.abspath('.')
+    return os.path.join(base_path, relative_path)
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     # 应用 Material 样式
-    with open("ui/material_style.qss", "r", encoding="utf-8") as f:
+    qss_path = resource_path('ui/material_style.qss')
+    with open(qss_path, "r", encoding="utf-8") as f:
         app.setStyleSheet(f.read())
 
     window = MainWindow()

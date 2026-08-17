@@ -5,8 +5,6 @@ from typing import Type, Dict
 
 from core.base.Format import Format
 
-FORMAT_PKG_NAME = "core.format"
-
 
 class BaseParser(ABC):
     """CAN 信号解析器抽象基类"""
@@ -99,10 +97,13 @@ class BaseParser(ABC):
         """
         自动加载指定包下的所有模块，触发子类注册
         """
-        package = importlib.import_module(FORMAT_PKG_NAME)
-        for _, module_name, _ in pkgutil.iter_modules(package.__path__):
-            # 动态导入模块，触发 __init_subclass__ 执行
-            importlib.import_module(f"{FORMAT_PKG_NAME}.{module_name}")
+        from core.format import Intel, MotorolaLSB, MotorolaMSB
+        # 由于打包之后，无法正常导入这些类，先改为手动注册导入
+        # FORMAT_PKG_NAME = "core.format"
+        # package = importlib.import_module(FORMAT_PKG_NAME)
+        # for _, module_name, _ in pkgutil.iter_modules(package.__path__):
+        #     # 动态导入模块，触发 __init_subclass__ 执行
+        #     importlib.import_module(f"{FORMAT_PKG_NAME}.{module_name}")
 
     @classmethod
     def get_parser(cls, formatter: Format) -> 'BaseParser':
