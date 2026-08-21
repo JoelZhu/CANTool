@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'Home.ui'
+# Form implementation generated from reading ui file 'ui/page/Home.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(750, 600)
+        MainWindow.resize(750, 800)
         self.centralWidget = QtWidgets.QWidget(MainWindow)
         self.centralWidget.setObjectName("centralWidget")
         self.mainLayout = QtWidgets.QVBoxLayout(self.centralWidget)
@@ -30,14 +30,26 @@ class Ui_MainWindow(object):
         self.comboFormat = QtWidgets.QComboBox(self.groupBoxParams)
         self.comboFormat.setObjectName("comboFormat")
         self.paramsLayout.addWidget(self.comboFormat, 0, 2, 1, 2)
+        self.labelCanId = QtWidgets.QLabel(self.groupBoxParams)
+        self.labelCanId.setObjectName("labelCanId")
+        self.paramsLayout.addWidget(self.labelCanId, 0, 4, 1, 1)
+        self.editCanId = QtWidgets.QLineEdit(self.groupBoxParams)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(2)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.editCanId.sizePolicy().hasHeightForWidth())
+        self.editCanId.setSizePolicy(sizePolicy)
+        self.editCanId.setMinimumSize(QtCore.QSize(80, 0))
+        self.editCanId.setObjectName("editCanId")
+        self.paramsLayout.addWidget(self.editCanId, 0, 5, 1, 1)
         self.labelBytes = QtWidgets.QLabel(self.groupBoxParams)
         self.labelBytes.setObjectName("labelBytes")
         self.paramsLayout.addWidget(self.labelBytes, 0, 6, 1, 1)
-        self.spinBytesLength = QtWidgets.QSpinBox(self.groupBoxParams)
-        self.spinBytesLength.setMinimum(1)
-        self.spinBytesLength.setProperty("value", 8)
-        self.spinBytesLength.setObjectName("spinBytesLength")
-        self.paramsLayout.addWidget(self.spinBytesLength, 0, 7, 1, 1)
+        self.spinByteLength = QtWidgets.QSpinBox(self.groupBoxParams)
+        self.spinByteLength.setMinimum(1)
+        self.spinByteLength.setProperty("value", 8)
+        self.spinByteLength.setObjectName("spinByteLength")
+        self.paramsLayout.addWidget(self.spinByteLength, 0, 7, 1, 1)
         self.labelStartBit = QtWidgets.QLabel(self.groupBoxParams)
         self.labelStartBit.setObjectName("labelStartBit")
         self.paramsLayout.addWidget(self.labelStartBit, 1, 0, 1, 1)
@@ -88,10 +100,11 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "CAN Tool"))
-        self.groupBoxParams.setTitle(_translate("MainWindow", "Matrix Information"))
+        self.groupBoxParams.setTitle(_translate("MainWindow", "Matrix Information (Required parameters will be marked as RED)"))
         self.labelFormat.setText(_translate("MainWindow", "Format"))
-        self.labelBytes.setText(_translate("MainWindow", "Bytes Length"))
+        self.labelCanId.setText(_translate("MainWindow", "CAN Id(HEX)"))
+        self.labelBytes.setText(_translate("MainWindow", "Byte Length"))
         self.labelStartBit.setText(_translate("MainWindow", "Start Bit"))
-        self.labelBitLength.setText(_translate("MainWindow", "Bit length"))
+        self.labelBitLength.setText(_translate("MainWindow", "Bit Length"))
         self.labelFactor.setText(_translate("MainWindow", "Factor"))
         self.labelOffset.setText(_translate("MainWindow", "Offset"))

@@ -3,8 +3,9 @@ import os.path
 from PyQt5.QtCore import QThread, Qt, QUrl, QCoreApplication
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QFileDialog, QHBoxLayout
+from can import ASCWriter, Message
 
-from core.BLFConverter import BLFConverter
+from core.BLFParser import BLFParser
 from ui.page.Converter import Ui_ConverterWidget
 from ui.page.Home import Ui_MainWindow
 from ui.window.SubWindow import SubWindow
@@ -20,8 +21,10 @@ class ConverterWindow(SubWindow):
         self.ui.convertButton.clicked.connect(self.start_conversion)
 
         self.thread = None
-        self.worker = None
+        self.parser = None
         self.result_dialog = None
+
+        self.asc_writer: ASCWriter
 
     def closeEvent(self, event):
         if self.thread and self.thread.isRunning():
@@ -39,7 +42,7 @@ class ConverterWindow(SubWindow):
             self.ui.filePathEdit.setText(file_path)
 
     def start_conversion(self):
-        blf_path = self.ui.filePathEdit.text().strip()
+        blf_path = self.__get_blf_path__()
         if not blf_path:
             return
 
@@ -64,9 +67,9 @@ class ConverterWindow(SubWindow):
             self.thread.deleteLater()
             self.thread = None
 
-        if self.worker:
-            self.worker.deleteLater()
-            self.worker = None
+        if self.parser:
+            self.parser.deleteLater()
+            self.parser = None
 
         # 强制处理事件，确保所有清理信号已处理
         QCoreApplication.processEvents()
@@ -78,24 +81,26 @@ class ConverterWindow(SubWindow):
         self.result_dialog.show()
 
         self.thread = QThread()
-        self.worker = BLFConverter(blf_path)
-        self.worker.moveToThread(self.thread)
+        self.parser = BLFParser(blf_path)
+        self.parser.moveToThread(self.thread)
 
         # 连接信号
-        self.worker.started.connect(lambda: self.update_progress_text(-1))
-        self.worker.progress.connect(self.on_conversion_progressed)
-        self.worker.finished.connect(self.on_conversion_finished)
-        self.worker.error.connect(self.on_conversion_error)
-        self.thread.started.connect(self.worker.run)
+        self.parser.started.connect(lambda: self.update_progress_text(-1))
+        self.parser.progress.connect(self.on_conversion_progressed)
+        self.parser.finished.connect(self.on_conversion_finished)
+        self.parser.error.connect(self.on_conversion_error)
+        self.parser.before_parsing.connect(self.before_parsing)
+        self.parser.on_parsing.connect(self.on_parsing)
+        self.thread.started.connect(self.parser.run)
 
         # 定义局部清理函数，确保引用正确
         def cleanup():
             if self.thread:
                 self.thread.deleteLater()
                 self.thread = None
-            if self.worker:
-                self.worker.deleteLater()
-                self.worker = None
+            if self.parser:
+                self.parser.deleteLater()
+                self.parser = None
 
         self.thread.finished.connect(cleanup)
         self.thread.start()
@@ -103,7 +108,7 @@ class ConverterWindow(SubWindow):
     def on_conversion_progressed(self, progress: int):
         self.update_progress_text(progress)
 
-    def on_conversion_finished(self, output_path: str):
+    def on_conversion_finished(self):
         if self.result_dialog:
             self.result_dialog.set_text("Succeed！", is_finished=True)
 
@@ -111,12 +116,28 @@ class ConverterWindow(SubWindow):
         if self.result_dialog:
             self.result_dialog.set_text(error_msg, is_finished=True, is_error=True)
 
+    def before_parsing(self):
+        blf_path = self.__get_blf_path__()
+        if not blf_path:
+            return
+
+        base, _ = os.path.splitext(blf_path)
+        asc_path = base + ".asc"
+        self.asc_writer = ASCWriter(asc_path)
+
+    def on_parsing(self, message: Message):
+        if self.asc_writer:
+            self.asc_writer.on_message_received(message)
+
     def update_progress_text(self, progress: int):
         if self.result_dialog:
             if progress < 0:
                 self.result_dialog.set_text("Convert preparing...")
             else:
                 self.result_dialog.set_text(f"Converting, progress: {progress}%")
+
+    def __get_blf_path__(self) -> str:
+        return self.ui.filePathEdit.text().strip()
 
 
 class ResultDialog(QDialog):

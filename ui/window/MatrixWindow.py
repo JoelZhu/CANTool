@@ -1,5 +1,7 @@
+from typing import List
+
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QHeaderView, QMessageBox, QTableWidgetItem
+from PyQt5.QtWidgets import QHeaderView, QMessageBox, QTableWidgetItem, QLabel, QTableWidget
 
 from core.MessageParser import MessageParser
 from core.base.BaseParser import BaseParser
@@ -15,36 +17,46 @@ class MatrixWindow(SubWindow):
         # 设置 ui 类
         self.ui = Ui_MatrixWidget()
         self.ui.setupUi(self)
+
+        # 设置行高
+        self.ui.tableMatrix.verticalHeader().setDefaultSectionSize(32)
         # 让所有列平分表格宽度
-        self.ui.tableMatrix.verticalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.ui.tableMatrix.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.ui.tableMatrix.setHorizontalHeaderLabels([str(f"Bit{i}") for i in range(7, -1, -1)])
+        # 禁止表格编辑
+        self.ui.tableMatrix.setEditTriggers(QTableWidget.NoEditTriggers)
 
-        self.ui.btnRefresh.clicked.connect(self.refresh_matrix)
+        self.ui.btnRefresh.clicked.connect(self.on_refresh_matrix)
 
-    def refresh_matrix(self):
+    def mark_as_required(self) -> List[QLabel]:
+        return [self.main_ui.labelFormat, self.main_ui.labelBytes, self.main_ui.labelStartBit,
+                self.main_ui.labelBitLength]
+
+    def on_refresh_matrix(self):
         try:
-            # 1. 获取矩阵信息
-            parser, start_bit, bit_length, bytes_length, _, _ = self.get_matrix_information()
-
-            # 3. 更新矩阵显示表格
-            self.update_matrix_table(parser, start_bit, bit_length, bytes_length)
-
+            self.refresh_matrix_inner()
         except Exception as e:
             QMessageBox.critical(self, "Refresh got exception.", str(e))
 
-    def update_matrix_table(self, parser: BaseParser, start_bit: int, bit_length: int, bytes_length: int):
+    def refresh_matrix_inner(self):
+        # 1. 获取矩阵信息
+        parser, _, byte_length, start_bit, bit_length, _, _ = self.get_and_check_if_parameters_legal()
+
+        # 2. 更新矩阵显示表格
+        self.update_matrix_table(parser, byte_length, start_bit, bit_length)
+
+    def update_matrix_table(self, parser: BaseParser, byte_length: int, start_bit: int, bit_length: int):
         # 1. 获取需要显示的位信息
-        positions = MessageParser.get_all_positions(parser, bytes_length, start_bit, bit_length)
+        positions = MessageParser.get_all_positions(parser, byte_length, start_bit, bit_length)
         if any(pos < 0 for pos in positions):
             raise ValueError("Illegal matrix information.")
 
         # 2. 更新字节信息
-        self.ui.tableMatrix.setRowCount(bytes_length)
-        self.ui.tableMatrix.setVerticalHeaderLabels([f"Byte{i}" for i in range(bytes_length)])
+        self.ui.tableMatrix.setRowCount(byte_length)
+        self.ui.tableMatrix.setVerticalHeaderLabels([f"Byte{i}" for i in range(byte_length)])
 
         # 3. 刷新表格内容
-        for row in range(bytes_length):
+        for row in range(byte_length):
             for col in range(8):
                 pos = row * 8 + (7 - col)
                 item = QTableWidgetItem(f"Bit{pos}")

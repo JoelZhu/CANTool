@@ -12,6 +12,7 @@ from ui.window.ConverterWindow import ConverterWindow
 from ui.window.GeneratorWindow import GeneratorWindow
 from ui.window.MatrixWindow import MatrixWindow
 from ui.window.ParserWindow import ParserWindow
+from ui.window.SubWindow import SubWindow
 
 
 class MainWindow(QMainWindow):
@@ -48,3 +49,10 @@ class MainWindow(QMainWindow):
         self.ui.tabWidget.addTab(self.parser_page, "Parser")
         self.ui.tabWidget.addTab(self.generator_page, "Generator")
         self.ui.tabWidget.addTab(self.matrix_page, "Matrix")
+        self.ui.tabWidget.currentChanged.connect(self.on_tab_changed)
+        # 触发首页的切换回调
+        self.on_tab_changed(0)
+
+    def on_tab_changed(self, index: int):
+        sub_window: SubWindow = self.ui.tabWidget.widget(index)
+        sub_window.on_window_changed()

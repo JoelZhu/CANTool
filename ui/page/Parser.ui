@@ -32,7 +32,7 @@
                         <item row="0" column="0" colspan="8">
                             <widget class="QLabel" name="labelData">
                                 <property name="text">
-                                    <string>CAN Message</string>
+                                    <string>【CAN Message】</string>
                                 </property>
                             </widget>
                         </item>
@@ -80,29 +80,38 @@
                             </widget>
                         </item>
 
-                        <!-- 第 4 行：结果标签（Raw Value、Physical Value） -->
-                        <item row="4" column="2">
+                        <!-- 第 4 行：分析结果标题 -->
+                        <item row="4" column="0" colspan="8">
+                            <widget class="QLabel" name="labelWatcher">
+                                <property name="text">
+                                    <string>【Parse Result】</string>
+                                </property>
+                            </widget>
+                        </item>
+
+                        <!-- 第 5 行：结果标签（Raw Value、Physical Value） -->
+                        <item row="5" column="2">
                             <widget class="QLabel" name="labelRaw">
                                 <property name="text">
                                     <string>Raw Value</string>
                                 </property>
                             </widget>
                         </item>
-                        <item row="4" column="3">
+                        <item row="5" column="3">
                             <widget class="QLineEdit" name="editRaw">
                                 <property name="readOnly">
                                     <bool>true</bool>
                                 </property>
                             </widget>
                         </item>
-                        <item row="4" column="4">
+                        <item row="5" column="4">
                             <widget class="QLabel" name="labelPhysical">
                                 <property name="text">
                                     <string>Physical Value</string>
                                 </property>
                             </widget>
                         </item>
-                        <item row="4" column="5">
+                        <item row="5" column="5">
                             <widget class="QLineEdit" name="editPhysical">
                                 <property name="readOnly">
                                     <bool>true</bool>

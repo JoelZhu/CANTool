@@ -21,8 +21,18 @@
             <item>
                 <widget class="QWidget" name="contentWidget" native="true">
                     <layout class="QGridLayout" name="gridLayout">
-                        <!-- 第 0 行：Raw Value、Physical Value -->
-                        <item row="0" column="2">
+
+                        <!-- 第 0 行：输入值标签 -->
+                        <item row="0" column="0" colspan="8">
+                            <widget class="QLabel" name="labelResult">
+                                <property name="text">
+                                    <string>【Value】</string>
+                                </property>
+                            </widget>
+                        </item>
+
+                        <!-- 第 1 行：Raw Value、Physical Value -->
+                        <item row="1" column="2">
                             <widget class="QRadioButton" name="radioRaw">
                                 <property name="text">
                                     <string>Raw Value</string>
@@ -32,7 +42,7 @@
                                 </property>
                             </widget>
                         </item>
-                        <item row="0" column="3">
+                        <item row="1" column="3">
                             <widget class="QSpinBox" name="spinRaw">
                                 <property name="minimum">
                                     <number>0</number>
@@ -45,14 +55,14 @@
                                 </property>
                             </widget>
                         </item>
-                        <item row="0" column="4">
+                        <item row="1" column="4">
                             <widget class="QRadioButton" name="radioPhysical">
                                 <property name="text">
                                     <string>Physical Value</string>
                                 </property>
                             </widget>
                         </item>
-                        <item row="0" column="5">
+                        <item row="1" column="5">
                             <widget class="QDoubleSpinBox" name="spinPhysical">
                                 <property name="decimals">
                                     <number>6</number>
@@ -69,8 +79,8 @@
                             </widget>
                         </item>
 
-                        <!-- 第 1 行：Generate 按钮 -->
-                        <item row="1" column="0" colspan="8" alignment="Qt::AlignHCenter">
+                        <!-- 第 2 行：Generate 按钮 -->
+                        <item row="2" column="0" colspan="8" alignment="Qt::AlignHCenter">
                             <widget class="QPushButton" name="btnGenerate">
                                 <property name="sizePolicy">
                                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -84,23 +94,17 @@
                             </widget>
                         </item>
 
-                        <!-- 第 2 行：结果标签 -->
-                        <item row="2" column="0" colspan="8">
+                        <!-- 第 3 行：结果标签 -->
+                        <item row="3" column="0" colspan="8">
                             <widget class="QLabel" name="labelResult">
                                 <property name="text">
-                                    <string>Generated CAN Message</string>
-                                </property>
-                                <property name="font">
-                                    <font>
-                                        <weight>75</weight>
-                                        <bold>true</bold>
-                                    </font>
+                                    <string>【Generated CAN Message】</string>
                                 </property>
                             </widget>
                         </item>
 
-                        <!-- 第 3 行：结果显示框 -->
-                        <item row="3" column="0" colspan="8">
+                        <!-- 第 4 行：结果显示框 -->
+                        <item row="4" column="0" colspan="8">
                             <widget class="QLineEdit" name="editResult">
                                 <property name="readOnly">
                                     <bool>true</bool>

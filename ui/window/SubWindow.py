@@ -1,20 +1,88 @@
-from PyQt5.QtWidgets import QWidget
+from typing import List
+
+from PyQt5.QtWidgets import QWidget, QLabel
 
 from ui.page.Home import Ui_MainWindow
 
 
+def set_label_as_required(label: QLabel, visible: bool):
+    if visible:
+        label.setProperty("required", "true")
+    else:
+        label.setProperty("required", "false")
+    # 强制刷新样式
+    label.style().polish(label)
+
+
 class SubWindow(QWidget):
     main_ui: Ui_MainWindow
+    required_parameters: list
 
     def __init__(self, main_ui: Ui_MainWindow):
         super().__init__()
         self.main_ui = main_ui
+        self.required_parameters = list()
 
-    def get_matrix_information(self):
+    def on_window_changed(self):
+        # 先全部不显示星标
+        set_label_as_required(self.main_ui.labelFormat, False)
+        set_label_as_required(self.main_ui.labelCanId, False)
+        set_label_as_required(self.main_ui.labelBytes, False)
+        set_label_as_required(self.main_ui.labelStartBit, False)
+        set_label_as_required(self.main_ui.labelBitLength, False)
+        set_label_as_required(self.main_ui.labelFactor, False)
+        set_label_as_required(self.main_ui.labelOffset, False)
+        # 针对性显示需要显示星标的
+        requires = self.mark_as_required()
+        self.required_parameters.clear()
+        if requires:
+            for required_label in self.mark_as_required():
+                set_label_as_required(required_label, True)
+                self.required_parameters.append(required_label)
+
+    def mark_as_required(self) -> List[QLabel]:
+        pass
+
+    def change_label_to_required(self, label: QLabel):
+        set_label_as_required(label, True)
+        self.required_parameters.append(label)
+
+    def change_label_to_optional(self, label: QLabel):
+        set_label_as_required(label, False)
+        if self.required_parameters.__contains__(label):
+            self.required_parameters.remove(label)
+
+    def get_and_check_if_parameters_legal(self):
+        parser, can_id, byte_length, start_bit, bit_length, factor, offset = self.__get_matrix_information__()
+        if self.main_ui.labelFormat in self.required_parameters:
+            if not parser:
+                raise ValueError("Format can't be null.")
+        if self.main_ui.labelCanId in self.required_parameters:
+            if not can_id:
+                raise ValueError("CAN Id can't be null.")
+        if self.main_ui.labelBytes in self.required_parameters:
+            if not byte_length:
+                raise ValueError("Byte Length can't be null.")
+        if self.main_ui.labelStartBit in self.required_parameters:
+            if start_bit is None:
+                raise ValueError("Start Bit can't be null.")
+        if self.main_ui.labelBitLength in self.required_parameters:
+            if not bit_length:
+                raise ValueError("Bit Length can't be null.")
+        if self.main_ui.labelFactor in self.required_parameters:
+            if not factor:
+                raise ValueError("Factor can't be null.")
+        if self.main_ui.labelOffset in self.required_parameters:
+            if offset is None:
+                raise ValueError("Offset can't be null.")
+        return parser, can_id, byte_length, start_bit, bit_length, factor, offset
+
+    def __get_matrix_information__(self):
         parser = self.main_ui.comboFormat.currentData()
+        can_id = self.main_ui.editCanId.text().upper().strip()
+        byte_length = self.main_ui.spinByteLength.value()
         start_bit = self.main_ui.spinStartBit.value()
         bit_length = self.main_ui.spinBitLength.value()
-        bytes_length = self.main_ui.spinBytesLength.value()
         factor = self.main_ui.spinFactor.value()
         offset = self.main_ui.spinOffset.value()
-        return parser, start_bit, bit_length, bytes_length, factor, offset
+        return parser, can_id, byte_length, start_bit, bit_length, factor, offset

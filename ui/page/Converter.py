@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'Converter.ui'
+# Form implementation generated from reading ui file 'ui/page/Converter.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -20,9 +20,9 @@ class Ui_ConverterWidget(object):
         self.gridLayout.setObjectName("gridLayout")
         self.labelHint = QtWidgets.QLabel(ConverterWidget)
         self.labelHint.setWordWrap(True)
-        self.labelHint.setStyleSheet("color: gray; font-size: 9pt;")
+        self.labelHint.setStyleSheet("color: gray; font-size: 9pt; padding-left: 16px; text-align: left")
         self.labelHint.setObjectName("labelHint")
-        self.gridLayout.addWidget(self.labelHint, 0, 0, 1, 8)
+        self.gridLayout.addWidget(self.labelHint, 0, 0, 1, 10)
         self.fileLayout = QtWidgets.QHBoxLayout()
         self.fileLayout.setObjectName("fileLayout")
         self.filePathEdit = QtWidgets.QLineEdit(ConverterWidget)

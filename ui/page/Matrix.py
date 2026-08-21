@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'Matrix.ui'
+# Form implementation generated from reading ui file 'ui/page/Matrix.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -25,18 +25,18 @@ class Ui_MatrixWidget(object):
         sizePolicy.setHeightForWidth(self.btnRefresh.sizePolicy().hasHeightForWidth())
         self.btnRefresh.setSizePolicy(sizePolicy)
         self.btnRefresh.setObjectName("btnRefresh")
-        self.gridLayout.addWidget(self.btnRefresh, 0, 1, 1, 1)
+        self.gridLayout.addWidget(self.btnRefresh, 0, 0, 1, 8, QtCore.Qt.AlignHCenter)
         self.tableMatrix = QtWidgets.QTableWidget(MatrixWidget)
         self.tableMatrix.setRowCount(0)
         self.tableMatrix.setColumnCount(8)
         self.tableMatrix.setObjectName("tableMatrix")
         self.tableMatrix.horizontalHeader().setVisible(True)
         self.tableMatrix.verticalHeader().setVisible(True)
-        self.gridLayout.addWidget(self.tableMatrix, 1, 0, 1, 3)
+        self.gridLayout.addWidget(self.tableMatrix, 1, 0, 1, 8)
 
         self.retranslateUi(MatrixWidget)
         QtCore.QMetaObject.connectSlotsByName(MatrixWidget)
 
     def retranslateUi(self, MatrixWidget):
         _translate = QtCore.QCoreApplication.translate
-        self.btnRefresh.setText(_translate("MatrixWidget", "Show Matrix"))
+        self.btnRefresh.setText(_translate("MatrixWidget", "Refresh"))

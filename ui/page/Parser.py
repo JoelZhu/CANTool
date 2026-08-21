@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'Parser.ui'
+# Form implementation generated from reading ui file 'ui/page/Parser.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -46,20 +46,23 @@ class Ui_ParserWidget(object):
         self.btnParse.setSizePolicy(sizePolicy)
         self.btnParse.setObjectName("btnParse")
         self.gridLayout.addWidget(self.btnParse, 3, 0, 1, 8, QtCore.Qt.AlignHCenter)
+        self.labelWatcher = QtWidgets.QLabel(self.contentWidget)
+        self.labelWatcher.setObjectName("labelWatcher")
+        self.gridLayout.addWidget(self.labelWatcher, 4, 0, 1, 8)
         self.labelRaw = QtWidgets.QLabel(self.contentWidget)
         self.labelRaw.setObjectName("labelRaw")
-        self.gridLayout.addWidget(self.labelRaw, 4, 2, 1, 1)
+        self.gridLayout.addWidget(self.labelRaw, 5, 2, 1, 1)
         self.editRaw = QtWidgets.QLineEdit(self.contentWidget)
         self.editRaw.setReadOnly(True)
         self.editRaw.setObjectName("editRaw")
-        self.gridLayout.addWidget(self.editRaw, 4, 3, 1, 1)
+        self.gridLayout.addWidget(self.editRaw, 5, 3, 1, 1)
         self.labelPhysical = QtWidgets.QLabel(self.contentWidget)
         self.labelPhysical.setObjectName("labelPhysical")
-        self.gridLayout.addWidget(self.labelPhysical, 4, 4, 1, 1)
+        self.gridLayout.addWidget(self.labelPhysical, 5, 4, 1, 1)
         self.editPhysical = QtWidgets.QLineEdit(self.contentWidget)
         self.editPhysical.setReadOnly(True)
         self.editPhysical.setObjectName("editPhysical")
-        self.gridLayout.addWidget(self.editPhysical, 4, 5, 1, 1)
+        self.gridLayout.addWidget(self.editPhysical, 5, 5, 1, 1)
         self.verticalLayout.addWidget(self.contentWidget)
         spacerItem = QtWidgets.QSpacerItem(20, 0, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem)
@@ -69,7 +72,7 @@ class Ui_ParserWidget(object):
 
     def retranslateUi(self, ParserWidget):
         _translate = QtCore.QCoreApplication.translate
-        self.labelData.setText(_translate("ParserWidget", "CAN Message"))
+        self.labelData.setText(_translate("ParserWidget", "【CAN Message】"))
         self.labelHint.setText(_translate("ParserWidget", "\n"
 "                                        Format in hex, each byte separated by space or comma.<br/>\n"
 "                                        Bytes order like: Byte0 Byte1 ...<br/>\n"
@@ -77,5 +80,6 @@ class Ui_ParserWidget(object):
 "                                    "))
         self.editData.setPlaceholderText(_translate("ParserWidget", "Enter hex bytes..."))
         self.btnParse.setText(_translate("ParserWidget", "Parse"))
+        self.labelWatcher.setText(_translate("ParserWidget", "【Parse Result】"))
         self.labelRaw.setText(_translate("ParserWidget", "Raw Value"))
         self.labelPhysical.setText(_translate("ParserWidget", "Physical Value"))

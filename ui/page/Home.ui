@@ -7,7 +7,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>750</width>
-                <height>600</height>
+                <height>800</height>
             </rect>
         </property>
         <property name="windowTitle">
@@ -19,7 +19,7 @@
                 <item>
                     <widget class="QGroupBox" name="groupBoxParams">
                         <property name="title">
-                            <string>Matrix Information</string>
+                            <string>Matrix Information (Required parameters will be marked as RED)</string>
                         </property>
                         <layout class="QGridLayout" name="paramsLayout">
                             <property name="horizontalSpacing">
@@ -29,7 +29,7 @@
                                 <number>10</number>
                             </property>
 
-                            <!-- 第 0 行：Format -->
+                            <!-- 第 0 行：Format & CANId & Byte Length -->
                             <item row="0" column="0" colspan="2">
                                 <widget class="QLabel" name="labelFormat">
                                     <property name="text">
@@ -40,15 +40,38 @@
                             <item row="0" column="2" colspan="2">
                                 <widget class="QComboBox" name="comboFormat"/>
                             </item>
+                            <item row="0" column="4">
+                                <widget class="QLabel" name="labelCanId">
+                                    <property name="text">
+                                        <string>CAN Id(HEX)</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="0" column="5">
+                                <widget class="QLineEdit" name="editCanId">
+                                    <property name="sizePolicy">
+                                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                            <horstretch>2</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>80</width>
+                                            <height>0</height>
+                                        </size>
+                                    </property>
+                                </widget>
+                            </item>
                             <item row="0" column="6">
                                 <widget class="QLabel" name="labelBytes">
                                     <property name="text">
-                                        <string>Bytes Length</string>
+                                        <string>Byte Length</string>
                                     </property>
                                 </widget>
                             </item>
                             <item row="0" column="7">
-                                <widget class="QSpinBox" name="spinBytesLength">
+                                <widget class="QSpinBox" name="spinByteLength">
                                     <property name="minimum">
                                         <number>1</number>
                                     </property>
@@ -82,7 +105,7 @@
                             <item row="1" column="2">
                                 <widget class="QLabel" name="labelBitLength">
                                     <property name="text">
-                                        <string>Bit length</string>
+                                        <string>Bit Length</string>
                                     </property>
                                 </widget>
                             </item>

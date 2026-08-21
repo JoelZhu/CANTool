@@ -29,13 +29,13 @@ class MessageParser:
         return {'raw': raw, 'physical': physical}
 
     @staticmethod
-    def generate_signal(parser: BaseParser, start_bit: int, bit_length: int, total_bytes: int, values: dict) -> list:
+    def generate_signal(parser: BaseParser, byte_length: int, start_bit: int, bit_length: int, values: dict) -> list:
         """
         根据物理值生成对应的 CAN 数据字节。
         :param parser: 具体的解析器实例（如 IntelParser）
+        :param byte_length: 生成的消息总字节数
         :param start_bit: 起始位
         :param bit_length: 信号长度
-        :param total_bytes: 生成的消息总字节数
         :param values: {'raw': int} 或者 {'physical': float, 'factor': float, 'offset': float} 二选一
         :return: 字节列表
         """
@@ -53,14 +53,14 @@ class MessageParser:
             if raw_value is None:
                 raise ValueError(f"Physical value is illegal, {physical}.")
 
-        return parser.generate_message(raw_value, start_bit, bit_length, total_bytes)
+        return parser.generate_message(raw_value, byte_length, start_bit, bit_length)
 
     @staticmethod
-    def get_all_positions(parser: BaseParser, bytes_length: int, start_bit: int, bit_length: int) -> list:
+    def get_all_positions(parser: BaseParser, byte_length: int, start_bit: int, bit_length: int) -> list:
         """
         获取全部的数据位。
         :param parser: 具体的解析器实例（如 IntelParser）
-        :param bytes_length: 字节数
+        :param byte_length: 字节数
         :param start_bit: 起始位
         :param bit_length: 信号长度
         :return: 字节列表
@@ -68,4 +68,4 @@ class MessageParser:
         if parser is None:
             raise ValueError("Parser cannot be None.")
 
-        return parser.get_all_valid_bit_positions(bytes_length, start_bit, bit_length)
+        return parser.get_all_valid_bit_positions(byte_length, start_bit, bit_length)

@@ -201,6 +201,14 @@ QLabel[class="title"] {
     font-size: 12pt;
 }
 
+QLabel[required="true"] {
+    color: red;
+}
+
+QLabel[required="false"] {
+    color: #E0E0E0;
+}
+
 /* ===== QGroupBox ===== */
 QGroupBox {
     border: 1px solid #555;
