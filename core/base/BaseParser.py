@@ -1,8 +1,10 @@
-import importlib
-import pkgutil
+# import importlib
+# import pkgutil
 from abc import ABC, abstractmethod
-from typing import Type, Dict
+from typing import Dict
 
+import core
+from core.Util import print_debug
 from core.base.Format import Format
 
 
@@ -98,6 +100,10 @@ class BaseParser(ABC):
         自动加载指定包下的所有模块，触发子类注册
         """
         from core.format import Intel, MotorolaLSB, MotorolaMSB
+        # 打印日志，防止 IDE format 自动删除这部分 import
+        print_content = f"{core.format.Intel.__name__}, {core.format.MotorolaLSB.__name__}, " \
+                        f"{core.format.MotorolaMSB.__name__}"
+        print_debug(f"Register formats: {print_content} manually.")
         # 由于打包之后，无法正常导入这些类，先改为手动注册导入
         # FORMAT_PKG_NAME = "core.format"
         # package = importlib.import_module(FORMAT_PKG_NAME)

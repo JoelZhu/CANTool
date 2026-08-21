@@ -29,18 +29,29 @@ class MessageParser:
         return {'raw': raw, 'physical': physical}
 
     @staticmethod
-    def generate_signal(parser: BaseParser, raw_value: int, start_bit: int, bit_length: int, total_bytes: int) -> list:
+    def generate_signal(parser: BaseParser, start_bit: int, bit_length: int, total_bytes: int, values: dict) -> list:
         """
         根据物理值生成对应的 CAN 数据字节。
         :param parser: 具体的解析器实例（如 IntelParser）
-        :param raw_value: 总线值
         :param start_bit: 起始位
         :param bit_length: 信号长度
         :param total_bytes: 生成的消息总字节数
+        :param values: {'raw': int} 或者 {'physical': float, 'factor': float, 'offset': float} 二选一
         :return: 字节列表
         """
         if parser is None:
             raise ValueError("Parser cannot be None.")
+
+        raw_value: int = values.get('raw')
+        if raw_value is None:
+            physical = values.get('physical')
+            factor = values.get('factor')
+            offset = values.get('offset')
+            if physical is None or factor is None or offset is None:
+                raise ValueError("Raw or Physical can't be all none.")
+            raw_value = int((physical - offset) / factor)
+            if raw_value is None:
+                raise ValueError(f"Physical value is illegal, {physical}.")
 
         return parser.generate_message(raw_value, start_bit, bit_length, total_bytes)
 

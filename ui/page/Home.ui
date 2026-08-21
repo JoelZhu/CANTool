@@ -6,8 +6,8 @@
             <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>600</width>
-                <height>550</height>
+                <width>750</width>
+                <height>600</height>
             </rect>
         </property>
         <property name="windowTitle">
@@ -26,20 +26,39 @@
                                 <number>10</number>
                             </property>
                             <property name="verticalSpacing">
-                                <number>6</number>
+                                <number>10</number>
                             </property>
-                            <!-- 第0行：Format -->
-                            <item row="0" column="0" colspan="1">
+
+                            <!-- 第 0 行：Format -->
+                            <item row="0" column="0" colspan="2">
                                 <widget class="QLabel" name="labelFormat">
                                     <property name="text">
                                         <string>Format</string>
                                     </property>
                                 </widget>
                             </item>
-                            <item row="0" column="1" colspan="3">
+                            <item row="0" column="2" colspan="2">
                                 <widget class="QComboBox" name="comboFormat"/>
                             </item>
-                            <!-- 第1行：Start Bit -->
+                            <item row="0" column="6">
+                                <widget class="QLabel" name="labelBytes">
+                                    <property name="text">
+                                        <string>Bytes Length</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="0" column="7">
+                                <widget class="QSpinBox" name="spinBytesLength">
+                                    <property name="minimum">
+                                        <number>1</number>
+                                    </property>
+                                    <property name="value">
+                                        <number>8</number>
+                                    </property>
+                                </widget>
+                            </item>
+
+                            <!-- 第 1 行：Start Bit & Bit Length & Factor & Offset -->
                             <item row="1" column="0">
                                 <widget class="QLabel" name="labelStartBit">
                                     <property name="text">
@@ -80,9 +99,56 @@
                                     </property>
                                 </widget>
                             </item>
+                            <item row="1" column="4">
+                                <widget class="QLabel" name="labelFactor">
+                                    <property name="text">
+                                        <string>Factor</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="1" column="5">
+                                <widget class="QDoubleSpinBox" name="spinFactor">
+                                    <property name="decimals">
+                                        <number>6</number>
+                                    </property>
+                                    <property name="minimum">
+                                        <double>0.000001</double>
+                                    </property>
+                                    <property name="maximum">
+                                        <double>1000000.000000</double>
+                                    </property>
+                                    <property name="value">
+                                        <double>1.000000</double>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="1" column="6">
+                                <widget class="QLabel" name="labelOffset">
+                                    <property name="text">
+                                        <string>Offset</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="1" column="7">
+                                <widget class="QDoubleSpinBox" name="spinOffset">
+                                    <property name="decimals">
+                                        <number>6</number>
+                                    </property>
+                                    <property name="minimum">
+                                        <double>-1000000.000000</double>
+                                    </property>
+                                    <property name="maximum">
+                                        <double>1000000.000000</double>
+                                    </property>
+                                    <property name="value">
+                                        <double>0.000000</double>
+                                    </property>
+                                </widget>
+                            </item>
                         </layout>
                     </widget>
                 </item>
+
                 <!-- TabWidget 区域 -->
                 <item>
                     <widget class="QTabWidget" name="tabWidget"/>
