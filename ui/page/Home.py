@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(750, 800)
+        MainWindow.resize(1000, 1000)
         self.centralWidget = QtWidgets.QWidget(MainWindow)
         self.centralWidget.setObjectName("centralWidget")
         self.mainLayout = QtWidgets.QVBoxLayout(self.centralWidget)
@@ -22,7 +22,7 @@ class Ui_MainWindow(object):
         self.groupBoxParams = QtWidgets.QGroupBox(self.centralWidget)
         self.groupBoxParams.setObjectName("groupBoxParams")
         self.paramsLayout = QtWidgets.QGridLayout(self.groupBoxParams)
-        self.paramsLayout.setSpacing(10)
+        self.paramsLayout.setSpacing(8)
         self.paramsLayout.setObjectName("paramsLayout")
         self.labelFormat = QtWidgets.QLabel(self.groupBoxParams)
         self.labelFormat.setObjectName("labelFormat")

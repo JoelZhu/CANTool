@@ -1,4 +1,5 @@
 from core.base.BaseParser import BaseParser
+from core.entity.SignalValue import SignalValue
 
 
 class MessageParser:
@@ -10,7 +11,7 @@ class MessageParser:
 
     @staticmethod
     def parse_signal(parser: BaseParser, data_bytes: list, start_bit: int, bit_length: int, factor: float = 1.0,
-                     offset: float = 0.0) -> dict:
+                     offset: float = 0.0) -> SignalValue:
         """
         解析 CAN 报文信号，返回包含原始值和物理值的字典。
         :param parser: 报文解析类，可选格式参考 `Format` 的定义
@@ -19,14 +20,14 @@ class MessageParser:
         :param bit_length: 信号长度 (bits)
         :param factor: 精度
         :param offset: 偏移量
-        :return: {'raw': int, 'physical': float}
+        :return: SignalValue
         """
         if parser is None:
             raise ValueError("Parser cannot be None.")
 
         raw = parser.parse_raw(data_bytes, start_bit, bit_length)
         physical = raw * factor + offset
-        return {'raw': raw, 'physical': physical}
+        return SignalValue(raw, physical)
 
     @staticmethod
     def generate_signal(parser: BaseParser, byte_length: int, start_bit: int, bit_length: int, values: dict) -> list:

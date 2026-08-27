@@ -14,9 +14,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MatrixWidget(object):
     def setupUi(self, MatrixWidget):
         MatrixWidget.setObjectName("MatrixWidget")
-        MatrixWidget.resize(750, 350)
         self.gridLayout = QtWidgets.QGridLayout(MatrixWidget)
-        self.gridLayout.setSpacing(10)
+        self.gridLayout.setSpacing(8)
         self.gridLayout.setObjectName("gridLayout")
         self.btnRefresh = QtWidgets.QPushButton(MatrixWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)

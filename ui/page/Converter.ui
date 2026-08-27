@@ -2,24 +2,16 @@
 <ui version="4.0">
     <class>ConverterWidget</class>
     <widget class="QWidget" name="ConverterWidget">
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>750</width>
-                <height>350</height>
-            </rect>
-        </property>
         <layout class="QGridLayout" name="gridLayout">
             <property name="horizontalSpacing">
-                <number>10</number>
+                <number>8</number>
             </property>
             <property name="verticalSpacing">
-                <number>10</number>
+                <number>8</number>
             </property>
 
             <!-- 第 0 行：提示标签 -->
-            <item row="0" column="0" colspan="10">
+            <item row="0" column="0" colspan="8">
                 <widget class="QLabel" name="labelHint">
                     <property name="text">
                         <string>
@@ -37,7 +29,7 @@
             </item>
 
             <!-- 第 1 行：文件选择框 -->
-            <item row="1" column="0" colspan="10">
+            <item row="1" column="0" colspan="8">
                 <layout class="QHBoxLayout" name="fileLayout">
                     <item>
                         <widget class="QLineEdit" name="filePathEdit">
@@ -63,7 +55,7 @@
             </item>
 
             <!-- 第 2 行：解析按钮 -->
-            <item row="2" column="0" colspan="10" alignment="Qt::AlignHCenter">
+            <item row="2" column="0" colspan="8" alignment="Qt::AlignHCenter">
                 <widget class="QPushButton" name="convertButton">
                     <property name="text">
                         <string>Convert</string>

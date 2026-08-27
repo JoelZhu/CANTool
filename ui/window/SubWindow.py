@@ -2,6 +2,8 @@ from typing import List
 
 from PyQt5.QtWidgets import QWidget, QLabel
 
+from core.base.BaseParser import BaseParser
+from core.entity.SignalData import SignalData
 from ui.page.Home import Ui_MainWindow
 
 
@@ -52,32 +54,34 @@ class SubWindow(QWidget):
         if self.required_parameters.__contains__(label):
             self.required_parameters.remove(label)
 
-    def get_and_check_if_parameters_legal(self):
-        parser, can_id, byte_length, start_bit, bit_length, factor, offset = self.__get_matrix_information__()
+    def get_and_check_if_parameters_legal(self) -> (BaseParser, int, SignalData):
+        parser, byte_length, signal_data = self.__get_matrix_information__()
+
         if self.main_ui.labelFormat in self.required_parameters:
             if not parser:
                 raise ValueError("Format can't be null.")
         if self.main_ui.labelCanId in self.required_parameters:
-            if not can_id:
+            if not signal_data.can_id:
                 raise ValueError("CAN Id can't be null.")
         if self.main_ui.labelBytes in self.required_parameters:
             if not byte_length:
                 raise ValueError("Byte Length can't be null.")
         if self.main_ui.labelStartBit in self.required_parameters:
-            if start_bit is None:
+            if signal_data.start_bit is None:
                 raise ValueError("Start Bit can't be null.")
         if self.main_ui.labelBitLength in self.required_parameters:
-            if not bit_length:
+            if not signal_data.bit_length:
                 raise ValueError("Bit Length can't be null.")
         if self.main_ui.labelFactor in self.required_parameters:
-            if not factor:
+            if not signal_data.factor:
                 raise ValueError("Factor can't be null.")
         if self.main_ui.labelOffset in self.required_parameters:
-            if offset is None:
+            if signal_data.offset is None:
                 raise ValueError("Offset can't be null.")
-        return parser, can_id, byte_length, start_bit, bit_length, factor, offset
 
-    def __get_matrix_information__(self):
+        return parser, byte_length, signal_data
+
+    def __get_matrix_information__(self) -> (BaseParser, int, SignalData):
         parser = self.main_ui.comboFormat.currentData()
         can_id = self.main_ui.editCanId.text().upper().strip()
         byte_length = self.main_ui.spinByteLength.value()
@@ -85,4 +89,4 @@ class SubWindow(QWidget):
         bit_length = self.main_ui.spinBitLength.value()
         factor = self.main_ui.spinFactor.value()
         offset = self.main_ui.spinOffset.value()
-        return parser, can_id, byte_length, start_bit, bit_length, factor, offset
+        return parser, byte_length, SignalData(can_id, "", start_bit, bit_length, factor, offset)

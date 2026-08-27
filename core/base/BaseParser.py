@@ -5,7 +5,7 @@ from typing import Dict
 
 import core
 from core.Util import print_debug
-from core.base.Format import Format
+from core.format.Format import Format
 
 
 class BaseParser(ABC):

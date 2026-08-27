@@ -2,20 +2,12 @@
 <ui version="4.0">
     <class>MatrixWidget</class>
     <widget class="QWidget" name="MatrixWidget">
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>750</width>
-                <height>350</height>
-            </rect>
-        </property>
         <layout class="QGridLayout" name="gridLayout">
             <property name="horizontalSpacing">
-                <number>10</number>
+                <number>8</number>
             </property>
             <property name="verticalSpacing">
-                <number>10</number>
+                <number>8</number>
             </property>
 
             <!-- 第 0 行：刷新按钮 -->

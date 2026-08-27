@@ -19,7 +19,7 @@ class MatrixWindow(SubWindow):
         self.ui.setupUi(self)
 
         # 设置行高
-        self.ui.tableMatrix.verticalHeader().setDefaultSectionSize(32)
+        self.ui.tableMatrix.verticalHeader().setDefaultSectionSize(36)
         # 让所有列平分表格宽度
         self.ui.tableMatrix.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.ui.tableMatrix.setHorizontalHeaderLabels([str(f"Bit{i}") for i in range(7, -1, -1)])
@@ -34,18 +34,18 @@ class MatrixWindow(SubWindow):
 
     def on_refresh_matrix(self):
         try:
-            self.refresh_matrix_inner()
+            self.__refresh_matrix_inner__()
         except Exception as e:
             QMessageBox.critical(self, "Refresh got exception.", str(e))
 
-    def refresh_matrix_inner(self):
+    def __refresh_matrix_inner__(self):
         # 1. 获取矩阵信息
-        parser, _, byte_length, start_bit, bit_length, _, _ = self.get_and_check_if_parameters_legal()
+        parser, byte_length, signal_data = self.get_and_check_if_parameters_legal()
 
         # 2. 更新矩阵显示表格
-        self.update_matrix_table(parser, byte_length, start_bit, bit_length)
+        self.__update_matrix_table__(parser, byte_length, signal_data.start_bit, signal_data.bit_length)
 
-    def update_matrix_table(self, parser: BaseParser, byte_length: int, start_bit: int, bit_length: int):
+    def __update_matrix_table__(self, parser: BaseParser, byte_length: int, start_bit: int, bit_length: int):
         # 1. 获取需要显示的位信息
         positions = MessageParser.get_all_positions(parser, byte_length, start_bit, bit_length)
         if any(pos < 0 for pos in positions):

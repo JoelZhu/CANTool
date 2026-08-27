@@ -1,5 +1,5 @@
 from core.base.BaseParser import BaseParser
-from core.base.Format import Format
+from core.format.Format import Format
 
 
 class IntelParser(BaseParser):

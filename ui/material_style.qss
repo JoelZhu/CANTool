@@ -19,7 +19,8 @@ QTabWidget::pane {
 }
 
 QTabBar::tab {
-    min-width: 96px;
+    min-width: 160px;
+    max-width: 160px;
     background: transparent;
     color: #AAA;
     padding: 8px 16px;
@@ -207,6 +208,18 @@ QLabel[required="true"] {
 
 QLabel[required="false"] {
     color: #E0E0E0;
+}
+
+/* ===== QFrame ===== */
+QFrame#horizontalLine {
+    background-color: #3D3D3D;
+    min-height: 2px;
+    max-height: 2px;
+    margin-top: 48px;
+    margin-bottom: 48px;
+    margin-left: 0px;
+    margin-right: 0px;
+    border: none;
 }
 
 /* ===== QGroupBox ===== */

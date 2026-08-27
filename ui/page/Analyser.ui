@@ -2,27 +2,19 @@
 <ui version="4.0">
     <class>AnalyserWidget</class>
     <widget class="QWidget" name="AnalyserWidget">
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>750</width>
-                <height>450</height>
-            </rect>
-        </property>
         <layout class="QGridLayout" name="gridLayout">
             <property name="horizontalSpacing">
-                <number>10</number>
+                <number>8</number>
             </property>
             <property name="verticalSpacing">
-                <number>10</number>
+                <number>8</number>
             </property>
 
-            <!-- 第 0 行：提示标签 + 输入框 + 添加按钮 -->
-            <item row="0" column="0" colspan="4">
+            <!-- 第 0 行：提示标签 & 报文方向 & 输入框 & 添加按钮 -->
+            <item row="0" column="0" colspan="2">
                 <widget class="QLabel" name="labelAddHint">
                     <property name="text">
-                        <string>Add signals above to watch in BLF.</string>
+                        <string>Add signals above to be watched in BLF.</string>
                     </property>
                     <property name="wordWrap">
                         <bool>true</bool>
@@ -38,7 +30,21 @@
                     </property>
                 </widget>
             </item>
-            <item row="0" column="4" colspan="4">
+            <item row="0" column="2" colspan="1">
+                <widget class="QComboBox" name="comboDirection">
+                    <item>
+                        <property name="text">
+                            <string>TX</string>
+                        </property>
+                    </item>
+                    <item>
+                        <property name="text">
+                            <string>RX</string>
+                        </property>
+                    </item>
+                </widget>
+            </item>
+            <item row="0" column="3" colspan="3">
                 <widget class="QLineEdit" name="editSignalName">
                     <property name="placeholderText">
                         <string>Signal name</string>
@@ -57,10 +63,10 @@
                     </property>
                 </widget>
             </item>
-            <item row="0" column="8" colspan="2">
+            <item row="0" column="6" colspan="2">
                 <widget class="QPushButton" name="addButton">
                     <property name="text">
-                        <string>Add</string>
+                        <string>Add To Watching</string>
                     </property>
                     <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -78,7 +84,7 @@
             </item>
 
             <!-- 第 1 行：关注列表标题 -->
-            <item row="1" column="0" colspan="10">
+            <item row="1" column="0" colspan="8">
                 <widget class="QLabel" name="labelWatcher">
                     <property name="text">
                         <string>【Watching Signals】</string>
@@ -87,10 +93,10 @@
             </item>
 
             <!-- 第 2 行：关注列表 -->
-            <item row="2" column="0" colspan="10">
+            <item row="2" column="0" colspan="8">
                 <widget class="QTableWidget" name="tableWatch">
                     <property name="columnCount">
-                        <number>7</number>
+                        <number>8</number>
                     </property>
                     <attribute name="horizontalHeaderVisible">
                         <bool>true</bool>
@@ -101,7 +107,8 @@
                     <property name="horizontalHeaderLabels">
                         <stringlist>
                             <string>CAN_ID</string>
-                            <string>MessageName</string>
+                            <string>Direction</string>
+                            <string>SignalName</string>
                             <string>StartBit</string>
                             <string>BitLength</string>
                             <string>Factor</string>
@@ -113,10 +120,11 @@
             </item>
 
             <!-- 第 3 行：文件选择框提示 -->
-            <item row="3" column="0" colspan="10">
+            <item row="3" column="0" colspan="8">
                 <widget class="QLabel" name="labelBLFHint">
                     <property name="text">
-                        <string>Select a BLF file to analyse. The signals in watching list will be displayed below.</string>
+                        <string>Select a BLF file to analyse. The signals in watching list will be displayed below.
+                        </string>
                     </property>
                     <property name="wordWrap">
                         <bool>true</bool>
@@ -128,7 +136,7 @@
             </item>
 
             <!-- 第 4 行：文件选择框 -->
-            <item row="4" column="0" colspan="10">
+            <item row="4" column="0" colspan="8">
                 <layout class="QHBoxLayout" name="fileLayout">
                     <item>
                         <widget class="QLineEdit" name="filePathEdit">
@@ -154,7 +162,7 @@
             </item>
 
             <!-- 第 5 行：分析按钮 -->
-            <item row="5" column="0" colspan="10" alignment="Qt::AlignHCenter">
+            <item row="5" column="0" colspan="8" alignment="Qt::AlignHCenter">
                 <widget class="QPushButton" name="analyseButton">
                     <property name="text">
                         <string>Analyse</string>
@@ -169,7 +177,7 @@
             </item>
 
             <!-- 第 6 行：分析结果标题 -->
-            <item row="6" column="0" colspan="10">
+            <item row="6" column="0" colspan="8">
                 <widget class="QLabel" name="labelResult">
                     <property name="text">
                         <string>【Analyser Result】</string>
@@ -177,11 +185,42 @@
                 </widget>
             </item>
 
-            <!-- 第 7 行：结果表格 -->
-            <item row="7" column="0" colspan="10">
+            <!-- 第 7 行：结果条件筛选 -->
+            <item row="7" column="0" colspan="8">
+                <layout class="QHBoxLayout" name="filterLayout">
+                    <item>
+                        <widget class="QLabel" name="labelFilter">
+                            <property name="text">
+                                <string>Filter Channels:</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item>
+                        <layout class="QHBoxLayout" name="channelFilterLayout">
+                            <!-- 此处动态添加 Channel 的复选框 -->
+                        </layout>
+                    </item>
+                    <item>
+                        <spacer name="horizontalSpacer">
+                            <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                                <size>
+                                    <width>40</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                    </item>
+                </layout>
+            </item>
+
+            <!-- 第 8 行：结果表格 -->
+            <item row="8" column="0" colspan="8">
                 <widget class="QTableWidget" name="tableResult">
                     <property name="columnCount">
-                        <number>4</number>
+                        <number>6</number>
                     </property>
                     <attribute name="horizontalHeaderVisible">
                         <bool>true</bool>
@@ -192,33 +231,21 @@
                     <property name="horizontalHeaderLabels">
                         <stringlist>
                             <string>Timestamp</string>
-                            <string>MessageName</string>
+                            <string>Channel</string>
+                            <string>Direction</string>
+                            <string>SignalName</string>
                             <string>RawValue</string>
                             <string>PhysicalValue</string>
                         </stringlist>
                     </property>
-                </widget>
-            </item>
-
-            <!-- 底部 Spacer（吸收剩余垂直空间） -->
-            <item row="8" column="0" colspan="10">
-                <spacer name="bottomSpacer">
-                    <property name="orientation">
-                        <enum>Qt::Vertical</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                        <size>
-                            <width>20</width>
-                            <height>0</height>
-                        </size>
-                    </property>
+                    <!-- 填充剩余部分 -->
                     <property name="sizePolicy">
                         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
                             <horstretch>0</horstretch>
                             <verstretch>1</verstretch>
                         </sizepolicy>
                     </property>
-                </spacer>
+                </widget>
             </item>
         </layout>
     </widget>
