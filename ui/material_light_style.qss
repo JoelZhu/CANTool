@@ -343,6 +343,18 @@ QMenu::item:selected {
     color: white;
 }
 
+/* ===== QTable ===== */
+QHeaderView::section {
+    background-color: #F5F5F5;
+    color: #333333;
+    border: 1px solid #DCDCDC;
+}
+
+QTableCornerButton::section {
+    background-color: #F5F5F5;
+    border: 1px solid #DCDCDC;
+}
+
 /* ===== ToggleSwitch ===== */
 ToggleSwitch {
     qproperty-trackColorOn: #1976D2;
