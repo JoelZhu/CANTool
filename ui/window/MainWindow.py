@@ -12,6 +12,7 @@ from ui.window.AnalyserWindow import AnalyserWindow
 from ui.window.CodecWindow import CodecWindow
 from ui.window.ConverterWindow import ConverterWindow
 from ui.window.MatrixWindow import MatrixWindow
+from ui.window.SettingsWindow import SettingsWindow
 from ui.window.SubWindow import SubWindow
 
 
@@ -52,12 +53,14 @@ class MainWindow(QMainWindow):
         self.converter_page = ConverterWindow(self.ui)
         self.codec_page = CodecWindow(self.ui)
         self.matrix_page = MatrixWindow(self.ui)
+        self.settings_page = SettingsWindow(self.ui)
 
         # 添加到 TabWidget
         self.ui.tabWidget.addTab(self.analyser_page, "Analyser")
         self.ui.tabWidget.addTab(self.converter_page, "Converter")
         self.ui.tabWidget.addTab(self.codec_page, "Codec")
         self.ui.tabWidget.addTab(self.matrix_page, "Matrix")
+        self.ui.tabWidget.addTab(self.settings_page, "Settings")
         self.ui.tabWidget.currentChanged.connect(self.on_tab_changed)
         # 触发首页的切换回调
         self.on_tab_changed(0)

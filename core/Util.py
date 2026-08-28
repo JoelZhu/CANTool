@@ -2,9 +2,13 @@ import os
 import sys
 from datetime import datetime
 
+from PyQt5.QtCore import QSettings
 from colorama import init, Fore, Style
+
 # 为了日志样式的初始化
 init()
+
+settings = QSettings("Joel", "CANTool")
 
 
 def resource_path(relative_path):
