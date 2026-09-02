@@ -5,8 +5,8 @@ from typing import Callable, List
 from PyQt5.QtCore import QThread, Qt
 from can import Message
 
-from core.BLFParser import BLFParser
-from core.MessageParser import MessageParser
+from core.parser.BLFParser import BLFParser
+from core.parser.MessageParser import MessageParser
 from core.Util import print_warn, print_debug
 from core.base.BaseParser import BaseParser
 from core.entity.SignalValue import SignalValue
@@ -26,7 +26,6 @@ class AnalyseResult:
 
 class AnalyseHelper:
     def __init__(self):
-        self.parser: BaseParser = None
         self.watching_map: {} = None
 
         self.thread: QThread = None
@@ -74,8 +73,7 @@ class AnalyseHelper:
             self.blf_parser.deleteLater()
             self.blf_parser = None
 
-    def start_analysing(self, blf_path: str, parser: BaseParser, watching_map: {}):
-        self.parser = parser
+    def start_analysing(self, blf_path: str, watching_map: {}):
         self.watching_map = watching_map
         self.analyse_results.clear()
         self.last_values.clear()
@@ -122,7 +120,7 @@ class AnalyseHelper:
                 bit_length = signal.bit_length
                 factor = signal.factor
                 offset = signal.offset
-                result = MessageParser.parse_signal(self.parser, data_bytes, start_bit, bit_length, factor, offset)
+                result = MessageParser.parse_signal(signal.format, data_bytes, start_bit, bit_length, factor, offset)
             except ValueError as e:
                 # 信号定义超出数据长度，可记录日志或跳过
                 print_warn(f"Warning: {e}")

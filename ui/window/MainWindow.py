@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMainWindow
 
-from core.MessageParser import MessageParser
+from core.parser.MessageParser import MessageParser
 from core.Util import resource_path
 from core.base.BaseParser import BaseParser
 from ui.page.Home import Ui_MainWindow
@@ -19,8 +19,6 @@ from ui.window.SubWindow import SubWindow
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        # 初始化解析器
-        MessageParser.init_parser()
 
         # 添加图标
         icon_path = resource_path('app_icon.ico')
@@ -43,10 +41,10 @@ class MainWindow(QMainWindow):
         self.setFixedSize(current_size)
 
         # 动态添加支持的报文格式
-        parsers_dict = BaseParser.get_all_parsers()
+        all_formats = BaseParser.get_all_formats()
         self.ui.comboFormat.clear()
-        for key, value in parsers_dict.items():
-            self.ui.comboFormat.addItem(key.value, value)
+        for fmt in all_formats:
+            self.ui.comboFormat.addItem(fmt.value, fmt)
 
         # 创建页面实例
         self.analyser_page = AnalyserWindow(self.ui)

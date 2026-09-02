@@ -19,7 +19,7 @@
                 <number>10</number>
             </property>
 
-            <!-- 分类标题 -->
+            <!-- 通用分类 -->
             <item>
                 <widget class="QLabel" name="categoryGeneral">
                     <property name="text">
@@ -33,7 +33,7 @@
 
             <!-- 主题 -->
             <item>
-                <layout class="QHBoxLayout" name="layoutGeneral1" stretch="1,1">
+                <layout class="QHBoxLayout" name="layoutGeneral" stretch="1,1">
                     <property name="spacing">
                         <number>20</number>
                     </property>
@@ -78,36 +78,150 @@
                 </layout>
             </item>
 
-            <!-- 一行整行开关项 -->
+            <!-- DBC 分类 -->
             <item>
-                <layout class="QHBoxLayout" name="rowFullWidthLayout">
-                    <property name="leftMargin">
-                        <number>9</number>
+                <widget class="QLabel" name="categoryDBC">
+                    <property name="text">
+                        <string>Data Base Container</string>
+                    </property>
+                    <property name="class" stdset="0">
+                        <string>settings-title</string>
+                    </property>
+                </widget>
+            </item>
+
+            <!-- DBC 配置 -->
+            <item>
+                <layout class="QHBoxLayout" name="layoutDBCSettings" stretch="1,1">
+                    <property name="spacing">
+                        <number>20</number>
                     </property>
                     <item>
-                        <widget class="QLabel" name="labelFullWidthOption">
-                            <property name="text">
-                                <string>TODO Option</string>
+                        <widget class="QWidget" name="settingsDBC" native="true">
+                            <layout class="QHBoxLayout" name="layoutDBC">
+                                <item>
+                                    <widget class="QLabel" name="labelDBC">
+                                        <property name="text">
+                                            <string>LSB First in Motorola</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <spacer name="horizontalSpacerTheme">
+                                        <property name="orientation">
+                                            <enum>Qt::Horizontal</enum>
+                                        </property>
+                                        <property name="sizeHint" stdset="0">
+                                            <size>
+                                                <width>40</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                </item>
+                                <item>
+                                    <widget class="ToggleSwitch" name="toggleLSBFirst">
+                                        <property name="text">
+                                            <string/>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </widget>
+                    </item>
+                    <!-- 预留 -->
+                    <item>
+                        <widget class="QWidget" name="settingsPlaceholder2" native="true">
+                        </widget>
+                    </item>
+                </layout>
+            </item>
+            <!-- 加载 DBC -->
+            <item>
+                <layout class="QHBoxLayout" name="layoutDBCFilePath">
+                    <item>
+                        <widget class="QLineEdit" name="editDBCFilePath">
+                            <property name="placeholderText">
+                                <string>Select a BLF file...</string>
+                            </property>
+                            <property name="readOnly">
+                                <bool>true</bool>
                             </property>
                         </widget>
                     </item>
                     <item>
-                        <spacer name="horizontalSpacerFullWidth">
-                            <property name="orientation">
-                                <enum>Qt::Horizontal</enum>
+                        <widget class="QPushButton" name="buttonDBCBrowse">
+                            <property name="text">
+                                <string>Browse</string>
                             </property>
-                            <property name="sizeHint" stdset="0">
-                                <size>
-                                    <width>40</width>
-                                    <height>20</height>
-                                </size>
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
                             </property>
-                        </spacer>
+                        </widget>
                     </item>
                     <item>
-                        <widget class="QCheckBox" name="checkFullWidthOption">
+                        <widget class="QPushButton" name="buttonDBCLoad">
                             <property name="text">
-                                <string/>
+                                <string>Load</string>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                        </widget>
+                    </item>
+                </layout>
+            </item>
+
+            <!-- loaded dbc files 标签与表格同一行 -->
+            <item>
+                <layout class="QHBoxLayout" name="layoutLoadedDBC" stretch="0,1">
+                    <property name="spacing">
+                        <number>10</number>
+                    </property>
+                    <item>
+                        <widget class="QLabel" name="labelLoadedDBCFiles">
+                            <property name="text">
+                                <string>Loaded DBC files</string>
+                            </property>
+                            <property name="alignment">
+                                <set>Qt::AlignLeft|Qt::AlignTop</set>
+                            </property>
+                        </widget>
+                    </item>
+                    <item>
+                        <widget class="QTableWidget" name="tableLoadedDBC">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumHeight">
+                                <number>120</number>
+                            </property>
+                            <property name="columnCount">
+                                <number>2</number>
+                            </property>
+                            <attribute name="horizontalHeaderVisible">
+                                <bool>true</bool>
+                            </attribute>
+                            <attribute name="verticalHeaderVisible">
+                                <bool>true</bool>
+                            </attribute>
+                            <attribute name="horizontalHeaderStretchLastSection">
+                                <bool>false</bool>
+                            </attribute>
+                            <property name="horizontalHeaderLabels">
+                                <stringlist>
+                                    <string>DBC Path</string>
+                                    <string>Unload</string>
+                                </stringlist>
                             </property>
                         </widget>
                     </item>

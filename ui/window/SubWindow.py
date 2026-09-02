@@ -2,7 +2,6 @@ from typing import List
 
 from PyQt5.QtWidgets import QWidget, QLabel
 
-from core.base.BaseParser import BaseParser
 from core.entity.SignalData import SignalData
 from ui.page.Home import Ui_MainWindow
 
@@ -54,11 +53,11 @@ class SubWindow(QWidget):
         if self.required_parameters.__contains__(label):
             self.required_parameters.remove(label)
 
-    def get_and_check_if_parameters_legal(self) -> (BaseParser, int, SignalData):
-        parser, byte_length, signal_data = self.__get_matrix_information__()
+    def get_and_check_if_parameters_legal(self) -> (int, SignalData):
+        byte_length, signal_data = self.__get_matrix_information__()
 
         if self.main_ui.labelFormat in self.required_parameters:
-            if not parser:
+            if not signal_data.format:
                 raise ValueError("Format can't be null.")
         if self.main_ui.labelCanId in self.required_parameters:
             if not signal_data.can_id:
@@ -79,14 +78,25 @@ class SubWindow(QWidget):
             if signal_data.offset is None:
                 raise ValueError("Offset can't be null.")
 
-        return parser, byte_length, signal_data
+        return byte_length, signal_data
 
-    def __get_matrix_information__(self) -> (BaseParser, int, SignalData):
-        parser = self.main_ui.comboFormat.currentData()
-        can_id = self.main_ui.editCanId.text().upper().strip()
+    def update_parameters(self, data: SignalData):
+        self.main_ui.comboFormat.setCurrentText(data.format.value)
+        self.main_ui.editCanId.setText(hex(data.can_id)[2:].upper())
+        self.main_ui.spinStartBit.setValue(data.start_bit)
+        self.main_ui.spinBitLength.setValue(data.bit_length)
+        self.main_ui.spinFactor.setValue(data.factor)
+        self.main_ui.spinOffset.setValue(data.offset)
+
+    def __get_matrix_information__(self) -> (int, SignalData):
+        signal_format = self.main_ui.comboFormat.currentData()
+        raw_can_id = self.main_ui.editCanId.text().upper().strip()
+        if raw_can_id.startswith('0X'):
+            raw_can_id = raw_can_id[2:]  # 去掉前两个字符
+        can_id = raw_can_id.upper()
         byte_length = self.main_ui.spinByteLength.value()
         start_bit = self.main_ui.spinStartBit.value()
         bit_length = self.main_ui.spinBitLength.value()
         factor = self.main_ui.spinFactor.value()
         offset = self.main_ui.spinOffset.value()
-        return parser, byte_length, SignalData(can_id, "", start_bit, bit_length, factor, offset)
+        return byte_length, SignalData(signal_format, can_id, "", "", start_bit, bit_length, factor, offset)

@@ -2,7 +2,7 @@ from typing import List
 
 from PyQt5.QtWidgets import QMessageBox, QLabel
 
-from core.MessageParser import MessageParser
+from core.parser.MessageParser import MessageParser
 from ui.page.Codec import Ui_CodecWidget
 from ui.page.Home import Ui_MainWindow
 from ui.window.SubWindow import SubWindow
@@ -17,8 +17,8 @@ class CodecWindow(SubWindow):
         self.ui.setupUi(self)
 
         # 连接按钮点击事件
-        self.ui.btnParse.clicked.connect(self.on_parse)
-        self.ui.btnGenerate.clicked.connect(self.on_generate)
+        self.ui.buttonParse.clicked.connect(self.on_parse)
+        self.ui.buttonGenerate.clicked.connect(self.on_generate)
 
     def mark_as_required(self) -> List[QLabel]:
         return [self.main_ui.labelFormat, self.main_ui.labelStartBit, self.main_ui.labelBitLength,
@@ -38,7 +38,7 @@ class CodecWindow(SubWindow):
 
     def __parse_inner__(self):
         # 1. 获取矩阵信息
-        parser, _, signal_data = self.get_and_check_if_parameters_legal()
+        _, signal_data = self.get_and_check_if_parameters_legal()
 
         # 2. 获取报文数据
         raw_text = self.ui.editData.text().strip()
@@ -49,8 +49,8 @@ class CodecWindow(SubWindow):
         data_bytes = [int(x, 16) for x in bytes_str.split()]
 
         # 4. 解析
-        result = MessageParser.parse_signal(parser, data_bytes, signal_data.start_bit, signal_data.bit_length,
-                                            signal_data.factor, signal_data.offset)
+        result = MessageParser.parse_signal(signal_data.format, data_bytes, signal_data.start_bit,
+                                            signal_data.bit_length, signal_data.factor, signal_data.offset)
 
         # 5. 显示结果
         self.ui.editRaw.setText(f"{result.raw_value} (0x{result.raw_value:X})")
@@ -58,7 +58,7 @@ class CodecWindow(SubWindow):
 
     def __generate_inner__(self):
         # 1. 获取矩阵信息
-        parser, byte_length, signal_data = self.get_and_check_if_parameters_legal()
+        byte_length, signal_data = self.get_and_check_if_parameters_legal()
 
         # 2. 获取总线值（如果是物理值的话，需要转化为总线值）
         message: list
@@ -71,7 +71,7 @@ class CodecWindow(SubWindow):
                 else:
                     raw_value = int(raw_text)
                 values = {'raw': raw_value}
-                message = MessageParser.generate_signal(parser, byte_length, signal_data.start_bit,
+                message = MessageParser.generate_signal(signal_data.format, byte_length, signal_data.start_bit,
                                                         signal_data.bit_length, values)
             else:
                 raise ValueError(f"Illegal raw value: {raw_text}.")
@@ -80,7 +80,7 @@ class CodecWindow(SubWindow):
             if physical_text:
                 physical_value = float(physical_text)
                 values = {'physical': physical_value, 'factor': signal_data.factor, 'offset': signal_data.offset}
-                message = MessageParser.generate_signal(parser, byte_length, signal_data.start_bit,
+                message = MessageParser.generate_signal(signal_data.format, byte_length, signal_data.start_bit,
                                                         signal_data.bit_length, values)
             else:
                 raise ValueError(f"Illegal physical value: {physical_text}.")

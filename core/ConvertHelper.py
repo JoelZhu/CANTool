@@ -4,7 +4,7 @@ from typing import Callable
 from PyQt5.QtCore import QObject, pyqtSlot, QThread
 from can import ASCWriter, Message
 
-from core.BLFParser import BLFParser
+from core.parser.BLFParser import BLFParser
 from core.base.BaseParser import BaseParser
 
 

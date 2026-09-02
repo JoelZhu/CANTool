@@ -3,6 +3,8 @@ import sys
 from PyQt5.QtWidgets import QApplication
 
 from core.Util import resource_path
+from core.parser.DBCParser import DBCParser
+from core.parser.MessageParser import MessageParser
 from ui.ThemeUtil import ThemeUtil
 from ui.window.MainWindow import MainWindow
 
@@ -19,6 +21,12 @@ if __name__ == "__main__":
     # 应用主题样式
     __apply_material_theme__(ThemeUtil.query_theme())
     ThemeUtil.register_theme_changed(__apply_material_theme__)
+
+    # 初始化解析器
+    MessageParser.init_parser()
+
+    # 加载已经加载过的 DBC 文件
+    DBCParser.init_parser()
 
     window = MainWindow()
     window.show()

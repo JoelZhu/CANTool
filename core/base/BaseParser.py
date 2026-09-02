@@ -1,7 +1,7 @@
 # import importlib
 # import pkgutil
 from abc import ABC, abstractmethod
-from typing import Dict
+from typing import Dict, List
 
 import core
 from core.Util import print_debug
@@ -85,7 +85,7 @@ class BaseParser(ABC):
                 data[byte_idx] |= (1 << bit_idx)
         return data
 
-    def get_all_valid_bit_positions(self, byte_length: int, start_bit: int, bit_length: int) -> list:
+    def get_all_valid_bit_positions(self, byte_length: int, start_bit: int, bit_length: int) -> List[int]:
         """从报文中提取原始整数值"""
         positions = self.get_bit_positions(start_bit, bit_length)
         total_bits = byte_length * 8
@@ -119,5 +119,5 @@ class BaseParser(ABC):
         return parser
 
     @classmethod
-    def get_all_parsers(cls) -> Dict[Format, 'BaseParser']:
-        return cls._parser_dict
+    def get_all_formats(cls) -> List[Format]:
+        return list(cls._parser_dict.keys())

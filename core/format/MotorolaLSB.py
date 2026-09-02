@@ -2,13 +2,13 @@ from core.base.BaseParser import BaseParser
 from core.format.Format import Format
 
 
-class MotorolaLSBParser(BaseParser):
+class MotorolaLSB(BaseParser):
     """Motorola LSB 格式：起始位为 LSB，大端字节序填充（向低地址回卷）"""
 
     def define_format(self) -> Format:
         return Format.MOTOROLA_LSB
 
-    def get_bit_positions(self, start_bit, bit_length):
+    def get_bit_positions(self, start_bit: int, bit_length: int):
         positions = []
         byte = start_bit // 8
         bit = start_bit % 8

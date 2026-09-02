@@ -17,14 +17,14 @@ class Ui_MatrixWidget(object):
         self.gridLayout = QtWidgets.QGridLayout(MatrixWidget)
         self.gridLayout.setSpacing(8)
         self.gridLayout.setObjectName("gridLayout")
-        self.btnRefresh = QtWidgets.QPushButton(MatrixWidget)
+        self.buttonRefresh = QtWidgets.QPushButton(MatrixWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.btnRefresh.sizePolicy().hasHeightForWidth())
-        self.btnRefresh.setSizePolicy(sizePolicy)
-        self.btnRefresh.setObjectName("btnRefresh")
-        self.gridLayout.addWidget(self.btnRefresh, 0, 0, 1, 8, QtCore.Qt.AlignHCenter)
+        sizePolicy.setHeightForWidth(self.buttonRefresh.sizePolicy().hasHeightForWidth())
+        self.buttonRefresh.setSizePolicy(sizePolicy)
+        self.buttonRefresh.setObjectName("buttonRefresh")
+        self.gridLayout.addWidget(self.buttonRefresh, 0, 0, 1, 8, QtCore.Qt.AlignHCenter)
         self.tableMatrix = QtWidgets.QTableWidget(MatrixWidget)
         self.tableMatrix.setRowCount(0)
         self.tableMatrix.setColumnCount(8)
@@ -38,4 +38,4 @@ class Ui_MatrixWidget(object):
 
     def retranslateUi(self, MatrixWidget):
         _translate = QtCore.QCoreApplication.translate
-        self.btnRefresh.setText(_translate("MatrixWidget", "Refresh"))
+        self.buttonRefresh.setText(_translate("MatrixWidget", "Refresh"))

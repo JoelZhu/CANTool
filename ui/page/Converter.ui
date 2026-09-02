@@ -30,16 +30,19 @@
 
             <!-- 第 1 行：文件选择框 -->
             <item row="1" column="0" colspan="8">
-                <layout class="QHBoxLayout" name="fileLayout">
+                <layout class="QHBoxLayout" name="layoutFile">
                     <item>
-                        <widget class="QLineEdit" name="filePathEdit">
+                        <widget class="QLineEdit" name="editFilePath">
                             <property name="placeholderText">
                                 <string>Select a BLF file...</string>
+                            </property>
+                            <property name="readOnly">
+                                <bool>true</bool>
                             </property>
                         </widget>
                     </item>
                     <item>
-                        <widget class="QPushButton" name="browseButton">
+                        <widget class="QPushButton" name="buttonBrowse">
                             <property name="text">
                                 <string>Browse</string>
                             </property>
@@ -56,7 +59,7 @@
 
             <!-- 第 2 行：解析按钮 -->
             <item row="2" column="0" colspan="8" alignment="Qt::AlignHCenter">
-                <widget class="QPushButton" name="convertButton">
+                <widget class="QPushButton" name="buttonConvert">
                     <property name="text">
                         <string>Convert</string>
                     </property>

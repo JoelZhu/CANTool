@@ -96,7 +96,7 @@
             <item row="2" column="0" colspan="8">
                 <widget class="QTableWidget" name="tableWatch">
                     <property name="columnCount">
-                        <number>8</number>
+                        <number>9</number>
                     </property>
                     <attribute name="horizontalHeaderVisible">
                         <bool>true</bool>
@@ -107,13 +107,14 @@
                     <property name="horizontalHeaderLabels">
                         <stringlist>
                             <string>CAN_ID</string>
+                            <string>Format</string>
                             <string>Direction</string>
                             <string>SignalName</string>
                             <string>StartBit</string>
                             <string>BitLength</string>
                             <string>Factor</string>
                             <string>Offset</string>
-                            <string>Delete</string>
+                            <string>Remove</string>
                         </stringlist>
                     </property>
                 </widget>
@@ -142,6 +143,9 @@
                         <widget class="QLineEdit" name="filePathEdit">
                             <property name="placeholderText">
                                 <string>Select a BLF file...</string>
+                            </property>
+                            <property name="readOnly">
+                                <bool>true</bool>
                             </property>
                         </widget>
                     </item>
