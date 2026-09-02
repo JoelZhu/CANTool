@@ -1,10 +1,9 @@
 import os
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QIcon, QGuiApplication
 from PyQt5.QtWidgets import QMainWindow
 
-from core.parser.MessageParser import MessageParser
 from core.Util import resource_path
 from core.base.BaseParser import BaseParser
 from ui.page.Home import Ui_MainWindow
@@ -28,6 +27,14 @@ class MainWindow(QMainWindow):
         # 设置主界面类
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        screen = QGuiApplication.primaryScreen()
+        available_size = screen.availableGeometry()  # 可用区域
+        width = available_size.width()
+        height = available_size.height()
+        min_size = width if width < height else height
+        actual_size = int(min_size * 0.8)
+        self.setFixedSize(QSize(actual_size, actual_size))
+
         # 设置每格平分
         for col in range(8):
             self.ui.paramsLayout.setColumnStretch(col, 1)
@@ -36,9 +43,6 @@ class MainWindow(QMainWindow):
         flags = self.windowFlags()
         flags &= ~Qt.WindowMaximizeButtonHint
         self.setWindowFlags(flags)
-        # 固定窗口尺寸（禁止缩放）
-        current_size = self.size()
-        self.setFixedSize(current_size)
 
         # 动态添加支持的报文格式
         all_formats = BaseParser.get_all_formats()

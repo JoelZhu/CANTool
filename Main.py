@@ -10,9 +10,13 @@ from ui.window.MainWindow import MainWindow
 
 
 def __apply_material_theme__(material_qss_name: str):
+    base_qss_path = resource_path(f"ui/material_base.qss")
+    with open(base_qss_path, "r", encoding="utf-8") as base_file_reader:
+        base_read = base_file_reader.read()
     qss_path = resource_path(f"ui/{material_qss_name}.qss")
-    with open(qss_path, "r", encoding="utf-8") as f:
-        app.setStyleSheet(f.read())
+    with open(qss_path, "r", encoding="utf-8") as color_file_reader:
+        color_read = color_file_reader.read()
+        app.setStyleSheet(base_read + color_read)
 
 
 if __name__ == "__main__":

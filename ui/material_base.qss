@@ -1,0 +1,175 @@
+/* ===== 基础样式：尺寸、间距、字体、布局及固定透明背景 ===== */
+* {
+    font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+    font-size: 10pt;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+/* ===== QTabBar ===== */
+QTabBar::tab {
+    min-width: 8em;
+    max-width: 8em;
+    padding: 0.5em 1em;
+    margin-right: 0.3em;
+    border-bottom: 3px solid transparent;
+    font-weight: 500;
+    font-size: 11pt;
+}
+
+/* ===== QPushButton ===== */
+QPushButton {
+    border-radius: 0.3em;
+    padding: 0.6em 1.4em;
+    font-weight: 500;
+    font-size: 10pt;
+    min-height: 1.4em;
+    min-width: 4em;
+}
+
+/* ===== QLineEdit / QPlainTextEdit ===== */
+QLineEdit, QPlainTextEdit {
+    border-radius: 0.3em;
+    padding: 0.4em 0.8em;
+    min-height: 1.2em;
+}
+
+/* ===== QSpinBox & QDoubleSpinBox ===== */
+QSpinBox, QDoubleSpinBox {
+    min-width: 5em;
+    border-radius: 0.3em;
+    padding: 0.3em 0.6em;
+    min-height: 1.2em;
+}
+
+QSpinBox::up-button, QDoubleSpinBox::up-button,
+QSpinBox::down-button, QDoubleSpinBox::down-button {
+    width: 0px;
+    height: 0px;
+    border: none;
+}
+
+/* ===== QComboBox ===== */
+QComboBox {
+    border-radius: 0.3em;
+    padding: 0.4em 2.5em 0.4em 0.8em;
+    min-height: 1.2em;
+}
+
+QComboBox::drop-down {
+    width: 1.8em;
+    border: none;
+}
+
+QComboBox::down-arrow {
+    width: 0;
+    height: 0;
+    border-left: 0.4em solid transparent;
+    border-right: 0.4em solid transparent;
+    border-top: 0.4em solid #AAA;
+    margin-right: 0.8em;
+    border-bottom: none;
+}
+
+/* ===== QLabel ===== */
+QLabel {
+    font-weight: 400;
+}
+
+QLabel[class="title"] {
+    font-weight: 600;
+    font-size: 12pt;
+}
+
+QLabel[class="settings-title"] {
+    font-weight: bold;
+    font-size: 12pt;
+}
+
+/* ===== QFrame#horizontalLine ===== */
+QFrame#horizontalLine {
+    min-height: 0.15em;
+    max-height: 0.15em;
+    margin-top: 3em;
+    margin-bottom: 3em;
+    margin-left: 0px;
+    margin-right: 0px;
+    border: none;
+}
+
+/* ===== QGroupBox ===== */
+QGroupBox {
+    border-radius: 0.5em;
+    margin-top: 0.8em;
+    padding-top: 0.8em;
+}
+
+QGroupBox::title {
+    left: 0.8em;
+    padding: 0 0.4em;
+    font-weight: 500;
+}
+
+/* ===== QCheckBox / QRadioButton ===== */
+QCheckBox, QRadioButton {
+    spacing: 0.5em;
+}
+
+QCheckBox::indicator, QRadioButton::indicator {
+    width: 1.2em;
+    height: 1.2em;
+}
+
+QCheckBox::indicator:unchecked, QRadioButton::indicator:unchecked {
+    border-radius: 0.2em;
+}
+
+QCheckBox::indicator:checked, QRadioButton::indicator:checked {
+    border-radius: 0.2em;
+}
+
+QRadioButton::indicator:unchecked {
+    border-radius: 0.6em;
+}
+
+QRadioButton::indicator:checked {
+    border-radius: 0.6em;
+}
+
+/* ===== QScrollBar ===== */
+QScrollBar:vertical {
+    width: 0.8em;
+    margin: 0px;
+}
+
+QScrollBar::handle:vertical {
+    min-height: 1.2em;
+    border-radius: 0.4em;
+}
+
+QScrollBar:horizontal {
+    height: 0.8em;
+    margin: 0px;
+}
+
+QScrollBar::handle:horizontal {
+    min-width: 1.2em;
+    border-radius: 0.4em;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+    width: 0px;
+}
+
+/* ===== QMenuBar / QMenu ===== */
+QMenuBar {
+    padding: 0.3em 0.8em;
+}
+
+QMenu {
+    border-radius: 0.3em;
+}
