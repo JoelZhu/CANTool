@@ -33,7 +33,7 @@ class MainWindow(QMainWindow):
         height = available_size.height()
         min_size = width if width < height else height
         actual_size = int(min_size * 0.8)
-        self.setFixedSize(QSize(actual_size, actual_size))
+        self.resize(QSize(actual_size, actual_size))
 
         # 设置每格平分
         for col in range(8):
