@@ -1,5 +1,6 @@
 from typing import List
 
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt, QSize, QCoreApplication, QModelIndex, QTimer
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QFileDialog, QHeaderView, QTableWidgetItem, QPushButton, QStyle, QWidget, QVBoxLayout, \
@@ -26,6 +27,18 @@ INDEX_WATCHING_OFFSET = 7
 INDEX_WATCHING_REMOVE = 8
 INDEX_WATCHING_SUM = INDEX_WATCHING_REMOVE + 1
 
+WATCHING_COLUMN_RATIOS = {
+    INDEX_WATCHING_CAN_ID: 1,
+    INDEX_WATCHING_FORMAT: 1,
+    INDEX_WATCHING_DIRECTION: 1,
+    INDEX_WATCHING_SIGNAL_NAME: 4,
+    INDEX_WATCHING_START_BIT: 1,
+    INDEX_WATCHING_BIT_LENGTH: 1,
+    INDEX_WATCHING_FACTOR: 1,
+    INDEX_WATCHING_OFFSET: 1,
+    INDEX_WATCHING_REMOVE: 1,
+}
+
 INDEX_RESULT_TIMESTAMP = 0
 INDEX_RESULT_CHANNEL = 1
 INDEX_RESULT_DIRECTION = 2
@@ -33,6 +46,15 @@ INDEX_RESULT_SIGNAL_NAME = 3
 INDEX_RESULT_RAW_VALUE = 4
 INDEX_RESULT_PHYSICAL_VALUE = 5
 INDEX_RESULT_SUM = INDEX_RESULT_PHYSICAL_VALUE + 1
+
+RESULT_COLUMN_RATIOS = {
+    INDEX_RESULT_TIMESTAMP: 8,
+    INDEX_RESULT_CHANNEL: 2,
+    INDEX_RESULT_DIRECTION: 2,
+    INDEX_RESULT_SIGNAL_NAME: 9,
+    INDEX_RESULT_RAW_VALUE: 3,
+    INDEX_RESULT_PHYSICAL_VALUE: 6,
+}
 
 KEY_FOR_REMOVE_BUTTON = "SignalName"
 
@@ -65,6 +87,11 @@ class AnalyserWindow(SubWindow):
         self.ui.analyseButton.clicked.connect(self.on_analyse)
         self.ui.analyseButton.setEnabled(False)
 
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        # 窗口大小改变时重新应用列宽
+        QTimer.singleShot(200, self.__apply_tables_column_ratios__)
+
     def closeEvent(self, event):
         self.helper.on_close_event()
         event.accept()
@@ -75,42 +102,31 @@ class AnalyserWindow(SubWindow):
 
     def setup_table(self):
         # 信号关注表
-        # 设置行高
+        # 设置行高、不显示行标题
         self.ui.tableWatch.verticalHeader().setDefaultSectionSize(32)
+        self.ui.tableWatch.verticalHeader().setVisible(False)
+        # 始终显示滚动条
+        self.ui.tableWatch.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         # 固定宽度列
-        self.ui.tableWatch.setColumnWidth(INDEX_WATCHING_CAN_ID, 80)  # CAN_ID
-        self.ui.tableWatch.setColumnWidth(INDEX_WATCHING_FORMAT, 80)  # Format
-        self.ui.tableWatch.setColumnWidth(INDEX_WATCHING_DIRECTION, 80)  # Direction
-        self.ui.tableWatch.setColumnWidth(INDEX_WATCHING_START_BIT, 80)  # StartBit
-        self.ui.tableWatch.setColumnWidth(INDEX_WATCHING_BIT_LENGTH, 80)  # BitLength
-        self.ui.tableWatch.setColumnWidth(INDEX_WATCHING_FACTOR, 80)  # Factor
-        self.ui.tableWatch.setColumnWidth(INDEX_WATCHING_OFFSET, 80)  # Offset
-        self.ui.tableWatch.setColumnWidth(INDEX_WATCHING_REMOVE, 80)  # RemoveButton
-        # 让 SignalName 拉伸，其余列固定
+        # 禁止用户手动调整列宽
         header = self.ui.tableWatch.horizontalHeader()
-        for col in range(INDEX_WATCHING_SUM):
-            if col == INDEX_WATCHING_SIGNAL_NAME:
-                header.setSectionResizeMode(col, QHeaderView.Stretch)
-            else:
-                header.setSectionResizeMode(col, QHeaderView.Fixed)
+        header.setSectionResizeMode(QHeaderView.Fixed)
         # 禁止表格编辑
         self.ui.tableWatch.setEditTriggers(QTableWidget.NoEditTriggers)
 
-        # 结果表
-        self.ui.tableResult.setColumnWidth(INDEX_RESULT_TIMESTAMP, 200)  # Timestamp
-        self.ui.tableResult.setColumnWidth(INDEX_RESULT_CHANNEL, 60)  # Channel
-        self.ui.tableResult.setColumnWidth(INDEX_RESULT_DIRECTION, 80)  # Direction
-        self.ui.tableResult.setColumnWidth(INDEX_RESULT_RAW_VALUE, 120)  # RawValue
-        self.ui.tableResult.setColumnWidth(INDEX_RESULT_PHYSICAL_VALUE, 180)  # PhysicalValue
-        # 让 SignalName 拉伸，其余列固定
+        # 设置行高、不显示行标题
+        self.ui.tableResult.verticalHeader().setDefaultSectionSize(32)
+        self.ui.tableResult.verticalHeader().setVisible(False)
+        # 始终显示滚动条
+        self.ui.tableResult.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        # 禁止用户手动调整列宽
         header = self.ui.tableResult.horizontalHeader()
-        for col in range(INDEX_RESULT_SUM):
-            if col == INDEX_RESULT_SIGNAL_NAME:
-                header.setSectionResizeMode(col, QHeaderView.Stretch)
-            else:
-                header.setSectionResizeMode(col, QHeaderView.Fixed)
+        header.setSectionResizeMode(QHeaderView.Fixed)
         # 禁止表格编辑
         self.ui.tableResult.setEditTriggers(QTableWidget.NoEditTriggers)
+
+        # 延迟应用一次初始列宽
+        QTimer.singleShot(0, self.__apply_tables_column_ratios__)
 
     def setup_suggestion(self):
         self.completer.setModel(self.suggested_model)
@@ -198,6 +214,40 @@ class AnalyserWindow(SubWindow):
         if self.result_dialog:
             self.result_dialog.set_text(error_msg, is_finished=True, is_error=True)
 
+    def __apply_tables_column_ratios__(self):
+        self.__apply_watching_column_ratios__()
+        self.__apply_result_column_ratios__()
+
+    def __apply_watching_column_ratios__(self):
+        self.__apply_table_column_ratios__(self.ui.tableWatch, WATCHING_COLUMN_RATIOS)
+
+    def __apply_result_column_ratios__(self):
+        self.__apply_table_column_ratios__(self.ui.tableResult, RESULT_COLUMN_RATIOS)
+
+    def __apply_table_column_ratios__(self, table: QtWidgets.QTableWidget, column_ratio):
+        viewport_width = table.viewport().width()
+        # 如果宽度无效（例如表格还未显示），直接返回
+        if viewport_width <= 0:
+            return
+
+        total_ratio = sum(column_ratio.values())
+        # 先计算每列的理论宽度（浮点数）
+        widths_float = {column: viewport_width * ratio / total_ratio for column, ratio in column_ratio.items()}
+
+        # 向下取整，并计算剩余像素
+        widths_int = {column: int(width) for column, width in widths_float.items()}
+        remainder = viewport_width - sum(widths_int.values())
+
+        # 将剩余像素按比例分配给前几列
+        # 这里按顺序给前 remainder 列各加 1 像素
+        columns = list(column_ratio.keys())
+        for index in range(remainder):
+            widths_int[columns[index % len(columns)]] += 1
+
+        # 应用列宽
+        for column, width in widths_int.items():
+            table.setColumnWidth(column, width)
+
     def __add_signal_inner__(self):
         # 1.1 获取矩阵信息
         _, signal_data = self.get_and_check_if_parameters_legal()
@@ -245,6 +295,10 @@ class AnalyserWindow(SubWindow):
         vbox.setContentsMargins(0, 0, 0, 0)
         vbox.addWidget(remove_button, alignment=Qt.AlignCenter)
         self.ui.tableWatch.setCellWidget(row, INDEX_WATCHING_REMOVE, remove_container)
+
+        if row == 1:
+            # 表格内容第一次添加时，重新应用列宽
+            QTimer.singleShot(0, self.__apply_watching_column_ratios__)
 
     def __remove_signal_inner__(self, button: QPushButton):
         signal_name = button.property(KEY_FOR_REMOVE_BUTTON)
@@ -333,6 +387,8 @@ class AnalyserWindow(SubWindow):
         # 刷新表格，恢复更新
         self.ui.tableResult.setUpdatesEnabled(True)
         self.ui.tableResult.viewport().update()
+
+        QTimer.singleShot(0, self.__apply_result_column_ratios__)
 
     def __from_table_row__(self, row_data: list) -> SignalData:
         # 从表格一行数据（字符串列表）创建实例。row_data 顺序与按照 INDEX_XXX 来匹配

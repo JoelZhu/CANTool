@@ -4,8 +4,9 @@ from typing import Callable
 from PyQt5.QtCore import QObject, pyqtSlot, QThread
 from can import ASCWriter, Message
 
-from core.parser.BLFParser import BLFParser
+from core.Util import print_debug, print_error
 from core.base.BaseParser import BaseParser
+from core.parser.BLFParser import BLFParser
 
 
 class ConvertHelper:
@@ -90,6 +91,7 @@ class ConvertHelper:
         self.writer_worker.moveToThread(self.write_thread)
 
         self.blf_parser.started.connect(lambda: self.writer_worker.open_file(blf_path))
+        self.blf_parser.on_parsing.connect(self.writer_worker.write_message)
         self.blf_parser.finished.connect(self.writer_worker.close_file)
 
         if self.progress:
@@ -112,28 +114,36 @@ class ConvertHelper:
 
         self.read_thread.finished.connect(cleanup)
         self.read_thread.start()
+        self.write_thread.start()
 
 
 class ASCWriterWorker(QObject):
     def __init__(self):
         super().__init__()
         self.asc_writer = None
+        self.on_parse_error_called: bool = False
 
     @pyqtSlot(str)
     def open_file(self, blf_path: str):
-        """根据 BLF 路径生成 ASC 文件路径并创建 ASCWriter"""
         base, _ = os.path.splitext(blf_path)
-        self.asc_writer = ASCWriter(base + ".asc")
+        asc_file = base + ".asc"
+        self.asc_writer = ASCWriter(asc_file)
+        print_debug(f"To generate asc path: {asc_file}.")
 
     @pyqtSlot(Message)
     def write_message(self, message: Message):
-        """写入一条 CAN 消息"""
         if self.asc_writer:
             self.asc_writer.on_message_received(message)
+        else:
+            if not self.on_parse_error_called:
+                print_error(f"ASC file not exists.")
+                self.on_parse_error_called = True
 
     @pyqtSlot()
     def close_file(self):
-        """关闭文件，释放资源"""
         if self.asc_writer:
             self.asc_writer.stop()
             self.asc_writer = None
+            print_debug(f"ASC writer released.")
+        else:
+            print_error(f"ASC file not exists, can't release it.")

@@ -1,6 +1,5 @@
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import QFileDialog
-from can import ASCWriter
 
 from core.ConvertHelper import ConvertHelper
 from ui.dialog.ConvertDialog import ConvertDialog
@@ -18,8 +17,6 @@ class ConverterWindow(SubWindow):
         self.thread = None
         self.parser = None
         self.result_dialog = None
-
-        self.asc_writer: ASCWriter = None
 
         # 设置 ui 类
         self.ui = Ui_ConverterWidget()

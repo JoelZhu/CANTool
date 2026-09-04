@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon, QGuiApplication
 from PyQt5.QtWidgets import QMainWindow
 
-from core.Util import resource_path
+from core.Util import resource_path, settings
 from core.base.BaseParser import BaseParser
 from ui.page.Home import Ui_MainWindow
 from ui.window.AnalyserWindow import AnalyserWindow
@@ -13,6 +13,8 @@ from ui.window.ConverterWindow import ConverterWindow
 from ui.window.MatrixWindow import MatrixWindow
 from ui.window.SettingsWindow import SettingsWindow
 from ui.window.SubWindow import SubWindow
+
+KEY_WINDOW_SIZE = "WindowSize"
 
 
 class MainWindow(QMainWindow):
@@ -27,13 +29,20 @@ class MainWindow(QMainWindow):
         # 设置主界面类
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        screen = QGuiApplication.primaryScreen()
-        available_size = screen.availableGeometry()  # 可用区域
-        width = available_size.width()
-        height = available_size.height()
-        min_size = width if width < height else height
-        actual_size = int(min_size * 0.8)
-        self.resize(QSize(actual_size, actual_size))
+
+        stored_size = settings.value(KEY_WINDOW_SIZE, None)
+        if stored_size is not None:
+            # 用户自行调整过，使用用户缓存的窗口大小
+            self.restoreGeometry(stored_size)
+        else:
+            # 首次，按照默认设定的窗口大小
+            screen = QGuiApplication.primaryScreen()
+            available_size = screen.availableGeometry()  # 可用区域
+            width = available_size.width()
+            height = available_size.height()
+            min_size = width if width < height else height
+            actual_size = int(min_size * 0.8)
+            self.resize(QSize(actual_size, actual_size))
 
         # 设置每格平分
         for col in range(8):
@@ -66,6 +75,12 @@ class MainWindow(QMainWindow):
         self.ui.tabWidget.currentChanged.connect(self.on_tab_changed)
         # 触发首页的切换回调
         self.on_tab_changed(0)
+
+    def closeEvent(self, event):
+        # 保存窗口几何信息（位置 + 大小）
+        window_size = self.saveGeometry()
+        settings.setValue(KEY_WINDOW_SIZE, window_size)
+        super().closeEvent(event)
 
     def on_tab_changed(self, index: int):
         sub_window: SubWindow = self.ui.tabWidget.widget(index)

@@ -49,6 +49,10 @@ class SettingsWindow(SubWindow):
         rows_height = 3 * self.ui.tableLoadedDBC.verticalHeader().defaultSectionSize()
         self.ui.tableLoadedDBC.setMinimumHeight(header_height + rows_height)
         self.ui.tableLoadedDBC.setMaximumHeight(header_height + rows_height)
+        # 不显示列标题
+        self.ui.tableLoadedDBC.verticalHeader().setVisible(False)
+        # 始终显示滚动条
+        self.ui.tableLoadedDBC.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
 
         # 加载数据
         self.__refresh_loaded_table__()
