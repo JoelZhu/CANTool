@@ -80,23 +80,16 @@ class SubWindow(QWidget):
 
         return byte_length, signal_data
 
-    def update_parameters(self, data: SignalData):
-        self.main_ui.comboFormat.setCurrentText(data.format.value)
-        self.main_ui.editCanId.setText(hex(data.can_id)[2:].upper())
-        self.main_ui.spinStartBit.setValue(data.start_bit)
-        self.main_ui.spinBitLength.setValue(data.bit_length)
-        self.main_ui.spinFactor.setValue(data.factor)
-        self.main_ui.spinOffset.setValue(data.offset)
-
     def __get_matrix_information__(self) -> (int, SignalData):
         signal_format = self.main_ui.comboFormat.currentData()
         raw_can_id = self.main_ui.editCanId.text().upper().strip()
         if raw_can_id.startswith('0X'):
             raw_can_id = raw_can_id[2:]  # 去掉前两个字符
         can_id = raw_can_id.upper()
+        signal_name = self.main_ui.editSignalName.text().strip()
         byte_length = self.main_ui.spinByteLength.value()
         start_bit = self.main_ui.spinStartBit.value()
         bit_length = self.main_ui.spinBitLength.value()
         factor = self.main_ui.spinFactor.value()
         offset = self.main_ui.spinOffset.value()
-        return byte_length, SignalData(signal_format, can_id, "", "", start_bit, bit_length, factor, offset)
+        return byte_length, SignalData(signal_format, can_id, "", signal_name, start_bit, bit_length, factor, offset)

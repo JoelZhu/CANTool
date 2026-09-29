@@ -1,11 +1,13 @@
 import os
 
-from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QIcon, QGuiApplication
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtCore import Qt, QSize, QModelIndex, QTimer
+from PyQt5.QtGui import QIcon, QGuiApplication, QStandardItemModel, QStandardItem
+from PyQt5.QtWidgets import QMainWindow, QCompleter
 
-from core.Util import resource_path, settings
+from core.Util import resource_path, settings, print_debug
 from core.base.BaseParser import BaseParser
+from core.entity.SignalData import SignalData
+from core.parser.DBCParser import DBCParser
 from ui.page.Home import Ui_MainWindow
 from ui.window.AnalyserWindow import AnalyserWindow
 from ui.window.CodecWindow import CodecWindow
@@ -21,6 +23,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        self.suggested_list = []
+
         # 添加图标
         icon_path = resource_path('app_icon.ico')
         if os.path.exists(icon_path):
@@ -29,6 +33,12 @@ class MainWindow(QMainWindow):
         # 设置主界面类
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+        self.suggested_model = QStandardItemModel()
+        self.completer = QCompleter(self.suggested_list)
+        self.setup_suggestion()
+        DBCParser.register_dbc_change_callback(self.__refresh_suggestions)
+        self.ui.editSignalName.setCompleter(self.completer)  # 关联到输入框
 
         stored_size = settings.value(KEY_WINDOW_SIZE, None)
         if stored_size is not None:
@@ -82,6 +92,44 @@ class MainWindow(QMainWindow):
         settings.setValue(KEY_WINDOW_SIZE, window_size)
         super().closeEvent(event)
 
+    def setup_suggestion(self):
+        self.completer.setModel(self.suggested_model)
+        self.completer.setCompletionRole(Qt.DisplayRole)
+        self.completer.setCaseSensitivity(Qt.CaseInsensitive)  # 不区分大小写
+        self.completer.setFilterMode(Qt.MatchContains)  # 包含匹配（默认是 MatchStartsWith）
+        self.completer.setCompletionMode(QCompleter.PopupCompletion)  # 弹出下拉列表
+        self.completer.activated[QModelIndex].connect(self.on_suggestion_activated)
+        self.__refresh_suggestions()
+
+    def on_suggestion_activated(self, index: QModelIndex):
+        # 获取完整数据对象
+        signal_data = index.data(Qt.UserRole)
+        if signal_data is None:
+            return
+        print_debug(f"Selected signal: {signal_data.signal_name} in suggestion.")
+        # 延迟执行，防止信号名输入框被自动填充覆盖
+        QTimer.singleShot(0, lambda: self.__update_signal_to_edits__(signal_data))
+
     def on_tab_changed(self, index: int):
         sub_window: SubWindow = self.ui.tabWidget.widget(index)
         sub_window.on_window_changed()
+
+    def __refresh_suggestions(self):
+        self.suggested_model.clear()
+        for signal in DBCParser.query_all_loaded_signals():
+            suggested_item = QStandardItem(f"0x{hex(signal.can_id)[2:].upper()} - {signal.signal_name}")
+            # 将完整数据存入 UserRole（也可存入多个角色）
+            suggested_item.setData(signal, Qt.UserRole)
+            self.suggested_model.appendRow(suggested_item)
+
+    def __update_signal_to_edits__(self, signal_data: SignalData):
+        self.__update_parameters__(signal_data)
+        self.ui.editSignalName.setText(signal_data.signal_name)
+
+    def __update_parameters__(self, data: SignalData):
+        self.ui.comboFormat.setCurrentText(data.format.value)
+        self.ui.editCanId.setText(hex(data.can_id)[2:].upper())
+        self.ui.spinStartBit.setValue(data.start_bit)
+        self.ui.spinBitLength.setValue(data.bit_length)
+        self.ui.spinFactor.setValue(data.factor)
+        self.ui.spinOffset.setValue(data.offset)

@@ -32,15 +32,6 @@ class Ui_AnalyserWidget(object):
         self.comboDirection.addItem("")
         self.comboDirection.addItem("")
         self.gridLayout.addWidget(self.comboDirection, 0, 2, 1, 1)
-        self.editSignalName = QtWidgets.QLineEdit(AnalyserWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(2)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.editSignalName.sizePolicy().hasHeightForWidth())
-        self.editSignalName.setSizePolicy(sizePolicy)
-        self.editSignalName.setMinimumSize(QtCore.QSize(80, 0))
-        self.editSignalName.setObjectName("editSignalName")
-        self.gridLayout.addWidget(self.editSignalName, 0, 3, 1, 3)
         self.addButton = QtWidgets.QPushButton(AnalyserWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(2)
@@ -122,10 +113,12 @@ class Ui_AnalyserWidget(object):
 
     def retranslateUi(self, AnalyserWidget):
         _translate = QtCore.QCoreApplication.translate
-        self.labelAddHint.setText(_translate("AnalyserWidget", "Add signals above to be watched in BLF."))
+        self.labelAddHint.setText(_translate("AnalyserWidget", "\n"
+"                            Add signals above to be watched in BLF.<br/>\n"
+"                            The “Direction” on the right is only for display in the analysis results.\n"
+"                        "))
         self.comboDirection.setItemText(0, _translate("AnalyserWidget", "TX"))
         self.comboDirection.setItemText(1, _translate("AnalyserWidget", "RX"))
-        self.editSignalName.setPlaceholderText(_translate("AnalyserWidget", "Signal name"))
         self.addButton.setText(_translate("AnalyserWidget", "Add To Watching"))
         self.labelWatcher.setText(_translate("AnalyserWidget", "【Watching Signals】"))
         self.labelBLFHint.setText(_translate("AnalyserWidget", "Select a BLF file to analyse. The signals in watching list will be displayed below.\n"

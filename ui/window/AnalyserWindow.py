@@ -1,16 +1,14 @@
 from typing import List
 
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt, QSize, QCoreApplication, QModelIndex, QTimer
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
+from PyQt5.QtCore import Qt, QSize, QCoreApplication, QTimer
 from PyQt5.QtWidgets import QFileDialog, QHeaderView, QTableWidgetItem, QPushButton, QStyle, QWidget, QVBoxLayout, \
-    QLabel, QTableWidget, QMessageBox, QCheckBox, QCompleter
+    QLabel, QTableWidget, QMessageBox, QCheckBox
 
 from core.AnalyseHelper import AnalyseHelper, AnalyseResult
-from core.Util import print_error, print_debug
+from core.Util import print_error
 from core.entity.SignalData import SignalData
 from core.format.Format import Format
-from core.parser.DBCParser import DBCParser
 from ui.dialog.AnalyseDialog import AnalyseDialog
 from ui.page.Analyser import Ui_AnalyserWidget
 from ui.page.Home import Ui_MainWindow
@@ -67,7 +65,6 @@ class AnalyserWindow(SubWindow):
 
         self.result_dialog = None
         self.channel_checkboxes = []
-        self.suggested_list = []
 
         self._watching_map = {}  # can_id -> list[str, SignalData]
         self._analyse_result: List[AnalyseResult] = list()
@@ -76,11 +73,6 @@ class AnalyserWindow(SubWindow):
         self.ui = Ui_AnalyserWidget()
         self.ui.setupUi(self)
         self.setup_table()
-
-        self.suggested_model = QStandardItemModel()
-        self.completer = QCompleter(self.suggested_list)
-        self.setup_suggestion()
-        DBCParser.register_dbc_change_callback(self.__refresh_suggestions)
 
         self.ui.addButton.clicked.connect(self.on_add_signal)
         self.ui.browseButton.clicked.connect(self.on_browse_clicked)
@@ -128,31 +120,12 @@ class AnalyserWindow(SubWindow):
         # 延迟应用一次初始列宽
         QTimer.singleShot(0, self.__apply_tables_column_ratios__)
 
-    def setup_suggestion(self):
-        self.completer.setModel(self.suggested_model)
-        self.completer.setCompletionRole(Qt.DisplayRole)
-        self.completer.setCaseSensitivity(Qt.CaseInsensitive)  # 不区分大小写
-        self.completer.setFilterMode(Qt.MatchContains)  # 包含匹配（默认是 MatchStartsWith）
-        self.completer.setCompletionMode(QCompleter.PopupCompletion)  # 弹出下拉列表
-        self.completer.activated[QModelIndex].connect(self.on_suggestion_activated)
-        self.ui.editSignalName.setCompleter(self.completer)  # 关联到输入框
-        self.__refresh_suggestions()
-
     def on_add_signal(self):
         try:
             self.__add_signal_inner__()
             self.__update_analyse_enable__()
         except Exception as e:
             QMessageBox.critical(self, "Add signal got exception.", str(e))
-
-    def on_suggestion_activated(self, index: QModelIndex):
-        # 获取完整数据对象
-        signal_data = index.data(Qt.UserRole)
-        if signal_data is None:
-            return
-        print_debug(f"Selected signal: {signal_data.signal_name} in suggestion.")
-        # 延迟执行，防止信号名输入框被自动填充覆盖
-        QTimer.singleShot(0, lambda: self.__update_signal_to_edits__(signal_data))
 
     def on_browse_clicked(self):
         file_path, _ = QFileDialog.getOpenFileName(
@@ -251,9 +224,7 @@ class AnalyserWindow(SubWindow):
     def __add_signal_inner__(self):
         # 1.1 获取矩阵信息
         _, signal_data = self.get_and_check_if_parameters_legal()
-        # 1.2 获取信号补充信息
-        signal_name = self.ui.editSignalName.text().strip()
-        if not signal_name:
+        if not signal_data.signal_name:
             raise ValueError("Signal Name can't be null.")
         direction = self.ui.comboDirection.currentText()
 
@@ -264,7 +235,7 @@ class AnalyserWindow(SubWindow):
         self.ui.tableWatch.setItem(row, INDEX_WATCHING_CAN_ID, QTableWidgetItem(f"0x{signal_data.can_id}"))
         self.ui.tableWatch.setItem(row, INDEX_WATCHING_FORMAT, QTableWidgetItem(Format.get_short(signal_data.format)))
         self.ui.tableWatch.setItem(row, INDEX_WATCHING_DIRECTION, QTableWidgetItem(direction))
-        self.ui.tableWatch.setItem(row, INDEX_WATCHING_SIGNAL_NAME, QTableWidgetItem(signal_name))
+        self.ui.tableWatch.setItem(row, INDEX_WATCHING_SIGNAL_NAME, QTableWidgetItem(signal_data.signal_name))
         self.ui.tableWatch.setItem(row, INDEX_WATCHING_START_BIT, QTableWidgetItem(str(signal_data.start_bit)))
         self.ui.tableWatch.setItem(row, INDEX_WATCHING_BIT_LENGTH, QTableWidgetItem(str(signal_data.bit_length)))
         self.ui.tableWatch.setItem(row, INDEX_WATCHING_FACTOR, QTableWidgetItem(str(signal_data.factor)))
@@ -288,7 +259,7 @@ class AnalyserWindow(SubWindow):
             }
         """)
         remove_button.setFixedSize(64, 24)
-        remove_button.setProperty(KEY_FOR_REMOVE_BUTTON, signal_name)
+        remove_button.setProperty(KEY_FOR_REMOVE_BUTTON, signal_data.signal_name)
         remove_button.clicked.connect(lambda checked, button=remove_button: self.__remove_signal_inner__(button))
         remove_container = QWidget()
         vbox = QVBoxLayout(remove_container)
@@ -344,14 +315,6 @@ class AnalyserWindow(SubWindow):
             if any(row_data):
                 watching_list.append(self.__from_table_row__(row_data))
         return watching_list
-
-    def __refresh_suggestions(self):
-        self.suggested_model.clear()
-        for signal in DBCParser.query_all_loaded_signals():
-            suggested_item = QStandardItem(f"0x{hex(signal.can_id)[2:].upper()} - {signal.signal_name}")
-            # 将完整数据存入 UserRole（也可存入多个角色）
-            suggested_item.setData(signal, Qt.UserRole)
-            self.suggested_model.appendRow(suggested_item)
 
     def __refresh_result_table__(self, showing_list: List[AnalyseResult]):
         # 禁用表格更新，一次性创建需要的条目
@@ -432,10 +395,6 @@ class AnalyserWindow(SubWindow):
             checkbox.stateChanged.connect(self.on_channel_filter_changed)
             self.ui.channelFilterLayout.addWidget(checkbox)
             self.channel_checkboxes.append((channel, checkbox))
-
-    def __update_signal_to_edits__(self, signal_data: SignalData):
-        self.update_parameters(signal_data)
-        self.ui.editSignalName.setText(signal_data.signal_name)
 
     def __update_analyse_enable__(self):
         watching_row_count = self.ui.tableWatch.rowCount()

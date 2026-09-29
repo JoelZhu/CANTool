@@ -14,7 +14,10 @@
             <item row="0" column="0" colspan="2">
                 <widget class="QLabel" name="labelAddHint">
                     <property name="text">
-                        <string>Add signals above to be watched in BLF.</string>
+                        <string>
+                            Add signals above to be watched in BLF.&lt;br/&gt;
+                            The “Direction” on the right is only for display in the analysis results.
+                        </string>
                     </property>
                     <property name="wordWrap">
                         <bool>true</bool>
@@ -42,25 +45,6 @@
                             <string>RX</string>
                         </property>
                     </item>
-                </widget>
-            </item>
-            <item row="0" column="3" colspan="3">
-                <widget class="QLineEdit" name="editSignalName">
-                    <property name="placeholderText">
-                        <string>Signal name</string>
-                    </property>
-                    <property name="sizePolicy">
-                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                            <horstretch>2</horstretch>
-                            <verstretch>0</verstretch>
-                        </sizepolicy>
-                    </property>
-                    <property name="minimumSize">
-                        <size>
-                            <width>80</width>
-                            <height>0</height>
-                        </size>
-                    </property>
                 </widget>
             </item>
             <item row="0" column="6" colspan="2">
