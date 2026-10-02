@@ -1,11 +1,6 @@
 @echo off
 chcp 65001 >nul
 
-echo 正在拉取最新代码...
-git checkout .
-git pull
-
-echo.
 echo 正在准备打包环境...
 set "folder_to_delete=dist"
 if exist "%folder_to_delete%" (
@@ -16,9 +11,12 @@ if exist "%folder_to_delete%" (
 
 echo.
 echo 正在打包...
-".venv\Scripts\pyinstaller.exe" --add-data "ui/material_base.qss;ui" ^
-                                --add-data "ui/material_dark_style.qss;ui" ^
-                                --add-data "ui/material_light_style.qss;ui" ^
+".venv\Scripts\pyinstaller.exe" --add-data "resources/styles/material_base.qss;resources/styles" ^
+                                --add-data "resources/styles/material_dark_style.qss;resources/styles" ^
+                                --add-data "resources/styles/material_light_style.qss;resources/styles" ^
+                                --add-data "resources/languages/en_US.qm;resources/languages" ^
+                                --add-data "resources/languages/zh_CN.qm;resources/languages" ^
+                                --add-data "resources/fonts/selawk.ttf;resources/fonts" ^
                                 --add-data "app_icon.ico;." ^
                                 Main.py --windowed
 

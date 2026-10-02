@@ -8,7 +8,7 @@ class AnalyseDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.setWindowTitle("Analyse Progress")
+        self.setWindowTitle(self.tr("Analyse Progress"))
         self.setModal(True)
         self.setWindowFlags(Qt.Dialog | Qt.WindowTitleHint | Qt.CustomizeWindowHint)
 
@@ -18,7 +18,7 @@ class AnalyseDialog(QDialog):
         self.label.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(self.label)
 
-        self.close_btn = QPushButton("Close")
+        self.close_btn = QPushButton(self.tr("Close"))
         self.close_btn.setVisible(False)
         self.close_btn.clicked.connect(self.accept)
 

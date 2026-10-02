@@ -1,6 +1,6 @@
 import os
 
-from PyQt5.QtCore import Qt, QSize, QModelIndex, QTimer
+from PyQt5.QtCore import Qt, QSize, QModelIndex, QTimer, QEvent
 from PyQt5.QtGui import QIcon, QGuiApplication, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QMainWindow, QCompleter
 
@@ -26,7 +26,7 @@ class MainWindow(QMainWindow):
         self.suggested_list = []
 
         # 添加图标
-        icon_path = resource_path('app_icon.ico')
+        icon_path = resource_path("app_icon.ico")
         if os.path.exists(icon_path):
             self.setWindowIcon(QIcon(icon_path))
 
@@ -36,10 +36,50 @@ class MainWindow(QMainWindow):
 
         self.suggested_model = QStandardItemModel()
         self.completer = QCompleter(self.suggested_list)
-        self.setup_suggestion()
-        DBCParser.register_dbc_change_callback(self.__refresh_suggestions)
-        self.ui.editSignalName.setCompleter(self.completer)  # 关联到输入框
+        self.__setup_suggestion__()
 
+        self.__setup_window_behaviours__()
+
+        # 设置每格平分
+        for col in range(8):
+            self.ui.paramsLayout.setColumnStretch(col, 1)
+
+        # 动态添加支持的报文格式
+        all_formats = BaseParser.get_all_formats()
+        self.ui.comboFormat.clear()
+        for fmt in all_formats:
+            self.ui.comboFormat.addItem(fmt.value, fmt)
+
+        self.__setup_tab_pages__()
+
+    def changeEvent(self, event):
+        if event.type() == QEvent.LanguageChange:
+            self.ui.retranslateUi(self)
+            self.__setup_tab_header__()
+        super().changeEvent(event)
+
+    def closeEvent(self, event):
+        # 保存窗口几何信息（位置 + 大小）
+        window_size = self.saveGeometry()
+        settings.setValue(KEY_WINDOW_SIZE, window_size)
+        super().closeEvent(event)
+
+    def on_tab_changed(self, index: int):
+        sub_window: SubWindow = self.ui.tabWidget.widget(index)
+        sub_window.on_window_changed()
+
+    def __setup_suggestion__(self):
+        self.completer.setModel(self.suggested_model)
+        self.completer.setCompletionRole(Qt.DisplayRole)
+        self.completer.setCaseSensitivity(Qt.CaseInsensitive)  # 不区分大小写
+        self.completer.setFilterMode(Qt.MatchContains)  # 包含匹配（默认是 MatchStartsWith）
+        self.completer.setCompletionMode(QCompleter.PopupCompletion)  # 弹出下拉列表
+        self.completer.activated[QModelIndex].connect(self.__on_suggestion_activated__)
+        DBCParser.register_dbc_change_callback(self.__refresh_suggestions__)
+        self.ui.editSignalName.setCompleter(self.completer)  # 关联到输入框
+        self.__refresh_suggestions__()
+
+    def __setup_window_behaviours__(self):
         stored_size = settings.value(KEY_WINDOW_SIZE, None)
         if stored_size is not None:
             # 用户自行调整过，使用用户缓存的窗口大小
@@ -54,54 +94,38 @@ class MainWindow(QMainWindow):
             actual_size = int(min_size * 0.8)
             self.resize(QSize(actual_size, actual_size))
 
-        # 设置每格平分
-        for col in range(8):
-            self.ui.paramsLayout.setColumnStretch(col, 1)
-
         # 去掉最大化按钮标志
         flags = self.windowFlags()
         flags &= ~Qt.WindowMaximizeButtonHint
         self.setWindowFlags(flags)
 
-        # 动态添加支持的报文格式
-        all_formats = BaseParser.get_all_formats()
-        self.ui.comboFormat.clear()
-        for fmt in all_formats:
-            self.ui.comboFormat.addItem(fmt.value, fmt)
-
+    def __setup_tab_pages__(self):
         # 创建页面实例
-        self.analyser_page = AnalyserWindow(self.ui)
-        self.converter_page = ConverterWindow(self.ui)
-        self.codec_page = CodecWindow(self.ui)
-        self.matrix_page = MatrixWindow(self.ui)
-        self.settings_page = SettingsWindow(self.ui)
+        analyser_page = AnalyserWindow(self.ui)
+        converter_page = ConverterWindow(self.ui)
+        codec_page = CodecWindow(self.ui)
+        matrix_page = MatrixWindow(self.ui)
+        settings_page = SettingsWindow(self.ui)
 
         # 添加到 TabWidget
-        self.ui.tabWidget.addTab(self.analyser_page, "Analyser")
-        self.ui.tabWidget.addTab(self.converter_page, "Converter")
-        self.ui.tabWidget.addTab(self.codec_page, "Codec")
-        self.ui.tabWidget.addTab(self.matrix_page, "Matrix")
-        self.ui.tabWidget.addTab(self.settings_page, "Settings")
+        self.ui.tabWidget.addTab(analyser_page, "")
+        self.ui.tabWidget.addTab(converter_page, "")
+        self.ui.tabWidget.addTab(codec_page, "")
+        self.ui.tabWidget.addTab(matrix_page, "")
+        self.ui.tabWidget.addTab(settings_page, "")
         self.ui.tabWidget.currentChanged.connect(self.on_tab_changed)
+        self.__setup_tab_header__()
         # 触发首页的切换回调
         self.on_tab_changed(0)
 
-    def closeEvent(self, event):
-        # 保存窗口几何信息（位置 + 大小）
-        window_size = self.saveGeometry()
-        settings.setValue(KEY_WINDOW_SIZE, window_size)
-        super().closeEvent(event)
+    def __setup_tab_header__(self):
+        self.ui.tabWidget.setTabText(0, self.tr("Analyser"))
+        self.ui.tabWidget.setTabText(1, self.tr("Converter"))
+        self.ui.tabWidget.setTabText(2, self.tr("Codec"))
+        self.ui.tabWidget.setTabText(3, self.tr("Matrix"))
+        self.ui.tabWidget.setTabText(4, self.tr("Settings"))
 
-    def setup_suggestion(self):
-        self.completer.setModel(self.suggested_model)
-        self.completer.setCompletionRole(Qt.DisplayRole)
-        self.completer.setCaseSensitivity(Qt.CaseInsensitive)  # 不区分大小写
-        self.completer.setFilterMode(Qt.MatchContains)  # 包含匹配（默认是 MatchStartsWith）
-        self.completer.setCompletionMode(QCompleter.PopupCompletion)  # 弹出下拉列表
-        self.completer.activated[QModelIndex].connect(self.on_suggestion_activated)
-        self.__refresh_suggestions()
-
-    def on_suggestion_activated(self, index: QModelIndex):
+    def __on_suggestion_activated__(self, index: QModelIndex):
         # 获取完整数据对象
         signal_data = index.data(Qt.UserRole)
         if signal_data is None:
@@ -110,16 +134,14 @@ class MainWindow(QMainWindow):
         # 延迟执行，防止信号名输入框被自动填充覆盖
         QTimer.singleShot(0, lambda: self.__update_signal_to_edits__(signal_data))
 
-    def on_tab_changed(self, index: int):
-        sub_window: SubWindow = self.ui.tabWidget.widget(index)
-        sub_window.on_window_changed()
-
-    def __refresh_suggestions(self):
+    def __refresh_suggestions__(self):
         self.suggested_model.clear()
         for signal in DBCParser.query_all_loaded_signals():
-            suggested_item = QStandardItem(f"0x{hex(signal.can_id)[2:].upper()} - {signal.signal_name}")
+            alias = f" ({signal.alias})" if signal.alias else ""
+            content = f"0x{hex(signal.data.can_id)[2:].upper()} - {signal.data.signal_name}{alias}"
+            suggested_item = QStandardItem(content)
             # 将完整数据存入 UserRole（也可存入多个角色）
-            suggested_item.setData(signal, Qt.UserRole)
+            suggested_item.setData(signal.data, Qt.UserRole)
             self.suggested_model.appendRow(suggested_item)
 
     def __update_signal_to_edits__(self, signal_data: SignalData):

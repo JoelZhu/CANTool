@@ -11,7 +11,7 @@ class ConvertDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.setWindowTitle("Convert Progress")
+        self.setWindowTitle(self.tr("Convert Progress"))
         self.setModal(True)
         self.setWindowFlags(Qt.Dialog | Qt.WindowTitleHint | Qt.CustomizeWindowHint)
 
@@ -23,12 +23,12 @@ class ConvertDialog(QDialog):
 
         # 水平布局：用于按钮
         button_layout = QHBoxLayout()
-        self.open_btn = QPushButton("Open")
+        self.open_btn = QPushButton(self.tr("Open"))
         self.open_btn.setVisible(False)
         self.open_btn.clicked.connect(self.open_folder)
         button_layout.addWidget(self.open_btn)
 
-        self.close_btn = QPushButton("Close")
+        self.close_btn = QPushButton(self.tr("Close"))
         self.close_btn.setVisible(False)
         self.close_btn.clicked.connect(self.accept)
         button_layout.addWidget(self.close_btn)

@@ -55,7 +55,7 @@ class BLFParser(QObject):
 
             print_debug("Message parse finished.")
             self.finished.emit()  # noqa
-        except Exception as e:
+        except Exception as exception:
             # 打印堆栈信息到控制台
-            print_error(f"Convert BLF got exception: {str(e)}")
-            self.error.emit(f"Failed: {str(e)}")  # noqa
+            print_error(f"Convert BLF got exception: {str(exception)}")
+            self.error.emit(f"Failed: {str(exception)}")  # noqa

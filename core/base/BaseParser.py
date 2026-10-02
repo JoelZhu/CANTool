@@ -49,13 +49,13 @@ class BaseParser(ABC):
         positions = self.get_bit_positions(start_bit, bit_length)
         total_bits = len(data_bytes) * 8
         value = 0
-        for i, pos in enumerate(positions):
-            if pos < 0 or pos >= total_bits:
-                raise ValueError(f"Bit position: {pos} out of range (0-{total_bits - 1})")
-            byte_idx = pos // 8
-            bit_idx = pos % 8
+        for index, position in enumerate(positions):
+            if position < 0 or position >= total_bits:
+                raise ValueError(f"Bit position: {position} out of range (0-{total_bits - 1})")
+            byte_idx = position // 8
+            bit_idx = position % 8
             if data_bytes[byte_idx] & (1 << bit_idx):
-                value |= (1 << i)
+                value |= (1 << index)
         return value
 
     def generate_message(self, raw_value: int, byte_length: int, start_bit: int, bit_length: int) -> list:
@@ -72,16 +72,16 @@ class BaseParser(ABC):
         positions = self.get_bit_positions(start_bit, bit_length)
 
         # 写入每一位
-        for i, pos in enumerate(positions):
+        for index, position in enumerate(positions):
             # 检查位位置是否超出总字节数范围
-            if pos < 0 or pos >= byte_length * 8:
-                raise ValueError(f"Bit position {pos} exceeds total bits ({byte_length * 8}).")
+            if position < 0 or position >= byte_length * 8:
+                raise ValueError(f"Bit position {position} exceeds total bits ({byte_length * 8}).")
 
-            # 获取 raw_value 的第 i 位（从 LSB 开始）
-            bit = (raw_value >> i) & 1
+            # 获取 raw_value 的第 index 位（从 LSB 开始）
+            bit = (raw_value >> index) & 1
             if bit:
-                byte_idx = pos // 8
-                bit_idx = pos % 8
+                byte_idx = position // 8
+                bit_idx = position % 8
                 data[byte_idx] |= (1 << bit_idx)
         return data
 
@@ -89,9 +89,9 @@ class BaseParser(ABC):
         """从报文中提取原始整数值"""
         positions = self.get_bit_positions(start_bit, bit_length)
         total_bits = byte_length * 8
-        for i, pos in enumerate(positions):
-            if pos < 0 or pos >= total_bits:
-                raise ValueError(f"Bit position: {pos} out of range (0-{total_bits - 1})")
+        for _, position in enumerate(positions):
+            if position < 0 or position >= total_bits:
+                raise ValueError(f"Bit position: {position} out of range (0-{total_bits - 1})")
         return positions
 
     @classmethod

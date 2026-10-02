@@ -9,4 +9,4 @@ class Intel(BaseParser):
         return Format.INTEL
 
     def get_bit_positions(self, start_bit: int, bit_length: int):
-        return [start_bit + i for i in range(bit_length)]
+        return [start_bit + index for index in range(bit_length)]

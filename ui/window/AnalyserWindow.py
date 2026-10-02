@@ -1,18 +1,17 @@
 from typing import List
 
-from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt, QSize, QCoreApplication, QTimer
-from PyQt5.QtWidgets import QFileDialog, QHeaderView, QTableWidgetItem, QPushButton, QStyle, QWidget, QVBoxLayout, \
+from PyQt5.QtWidgets import QHeaderView, QTableWidgetItem, QPushButton, QStyle, QWidget, QVBoxLayout, \
     QLabel, QTableWidget, QMessageBox, QCheckBox
 
 from core.AnalyseHelper import AnalyseHelper, AnalyseResult
-from core.Util import print_error
+from core.Util import print_error, trigger_file_select, FileType
 from core.entity.SignalData import SignalData
 from core.format.Format import Format
 from ui.dialog.AnalyseDialog import AnalyseDialog
 from ui.page.Analyser import Ui_AnalyserWidget
 from ui.page.Home import Ui_MainWindow
-from ui.window.SubWindow import SubWindow
+from ui.window.SubWindow import SubWindow, apply_table_column_ratios
 
 INDEX_WATCHING_CAN_ID = 0
 INDEX_WATCHING_FORMAT = 1
@@ -88,34 +87,46 @@ class AnalyserWindow(SubWindow):
         self.helper.on_close_event()
         event.accept()
 
+    def on_language_changed(self):
+        self.ui.retranslateUi(self)
+        # 设置表标题
+        self.__setup_table_header__()
+
     def mark_as_required(self) -> List[QLabel]:
         return [self.main_ui.labelFormat, self.main_ui.labelCanId, self.main_ui.labelStartBit,
                 self.main_ui.labelBitLength, self.main_ui.labelFactor, self.main_ui.labelOffset]
 
     def setup_table(self):
         # 信号关注表
+        self.ui.tableWatch.setColumnCount(INDEX_WATCHING_SUM)
         # 设置行高、不显示行标题
         self.ui.tableWatch.verticalHeader().setDefaultSectionSize(32)
         self.ui.tableWatch.verticalHeader().setVisible(False)
         # 始终显示滚动条
         self.ui.tableWatch.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        # 固定宽度列
-        # 禁止用户手动调整列宽
+        # 配置列标题属性
         header = self.ui.tableWatch.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Fixed)
+        header.setFixedHeight(32)
         # 禁止表格编辑
         self.ui.tableWatch.setEditTriggers(QTableWidget.NoEditTriggers)
 
+        # 分析结果表
+        self.ui.tableResult.setColumnCount(INDEX_RESULT_SUM)
         # 设置行高、不显示行标题
         self.ui.tableResult.verticalHeader().setDefaultSectionSize(32)
         self.ui.tableResult.verticalHeader().setVisible(False)
         # 始终显示滚动条
         self.ui.tableResult.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        # 禁止用户手动调整列宽
+        # 配置列标题属性
         header = self.ui.tableResult.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Fixed)
+        header.setFixedHeight(28)
         # 禁止表格编辑
         self.ui.tableResult.setEditTriggers(QTableWidget.NoEditTriggers)
+
+        # 设置表标题
+        self.__setup_table_header__()
 
         # 延迟应用一次初始列宽
         QTimer.singleShot(0, self.__apply_tables_column_ratios__)
@@ -124,13 +135,11 @@ class AnalyserWindow(SubWindow):
         try:
             self.__add_signal_inner__()
             self.__update_analyse_enable__()
-        except Exception as e:
-            QMessageBox.critical(self, "Add signal got exception.", str(e))
+        except Exception as exception:
+            QMessageBox.critical(self, "Add signal got exception.", str(exception))
 
     def on_browse_clicked(self):
-        file_path, _ = QFileDialog.getOpenFileName(
-            self, "Select a BLF file", "", "BLF Files (*.blf);;All Files (*)"
-        )
+        file_path = trigger_file_select(self, FileType.BLF)
         if file_path:
             self.ui.filePathEdit.setText(file_path)
             self.__update_analyse_enable__()
@@ -151,7 +160,7 @@ class AnalyserWindow(SubWindow):
         QCoreApplication.processEvents()
         # 创建对话框
         self.result_dialog = AnalyseDialog(self)
-        self.result_dialog.set_text("File analysing...")
+        self.result_dialog.set_text(self.tr("File analysing..."))
         self.result_dialog.prepare_blf_path(self.ui.filePathEdit.text().strip())
         self.result_dialog.show()
         # 注册回调
@@ -181,45 +190,34 @@ class AnalyserWindow(SubWindow):
         self.__refresh_result_table__(self._analyse_result)
 
         if self.result_dialog:
-            self.result_dialog.set_text("Succeed！", is_finished=True)
+            self.result_dialog.set_text(self.tr("Succeed！"), is_finished=True)
 
     def on_error(self, error_msg):
         if self.result_dialog:
             self.result_dialog.set_text(error_msg, is_finished=True, is_error=True)
+
+    def __setup_table_header__(self):
+        # 设置列标题
+        self.ui.tableWatch.setHorizontalHeaderLabels([
+            "CAN_ID",
+            self.tr("Format"), self.tr("Direction"), self.tr("SignalName"), self.tr("StartBit"), self.tr("BitLength"),
+            self.tr("Factor"), self.tr("Offset"), self.tr("Remove")
+        ])
+        # 设置列标题
+        self.ui.tableResult.setHorizontalHeaderLabels([
+            self.tr("Timestamp"), self.tr("Channel"), self.tr("Direction"), self.tr("SignalName"), self.tr("RawValue"),
+            self.tr("PhysicalValue")
+        ])
 
     def __apply_tables_column_ratios__(self):
         self.__apply_watching_column_ratios__()
         self.__apply_result_column_ratios__()
 
     def __apply_watching_column_ratios__(self):
-        self.__apply_table_column_ratios__(self.ui.tableWatch, WATCHING_COLUMN_RATIOS)
+        apply_table_column_ratios(self.ui.tableWatch, WATCHING_COLUMN_RATIOS)
 
     def __apply_result_column_ratios__(self):
-        self.__apply_table_column_ratios__(self.ui.tableResult, RESULT_COLUMN_RATIOS)
-
-    def __apply_table_column_ratios__(self, table: QtWidgets.QTableWidget, column_ratio):
-        viewport_width = table.viewport().width()
-        # 如果宽度无效（例如表格还未显示），直接返回
-        if viewport_width <= 0:
-            return
-
-        total_ratio = sum(column_ratio.values())
-        # 先计算每列的理论宽度（浮点数）
-        widths_float = {column: viewport_width * ratio / total_ratio for column, ratio in column_ratio.items()}
-
-        # 向下取整，并计算剩余像素
-        widths_int = {column: int(width) for column, width in widths_float.items()}
-        remainder = viewport_width - sum(widths_int.values())
-
-        # 将剩余像素按比例分配给前几列
-        # 这里按顺序给前 remainder 列各加 1 像素
-        columns = list(column_ratio.keys())
-        for index in range(remainder):
-            widths_int[columns[index % len(columns)]] += 1
-
-        # 应用列宽
-        for column, width in widths_int.items():
-            table.setColumnWidth(column, width)
+        apply_table_column_ratios(self.ui.tableResult, RESULT_COLUMN_RATIOS)
 
     def __add_signal_inner__(self):
         # 1.1 获取矩阵信息
@@ -294,19 +292,17 @@ class AnalyserWindow(SubWindow):
         self.__refresh_result_table__(filtered_results)
 
     def __update_progress_text__(self):
-        self.result_dialog.set_text("Analysing...")
+        self.result_dialog.set_text(self.tr("Analysing..."))
 
     def __get_blf_path__(self) -> str:
         return self.ui.filePathEdit.text().strip()
 
     def __get_watching_list__(self) -> List[SignalData]:
-        """从 tableWatch 中提取所有关注信号"""
         watching_list = []
-        table = self.ui.tableWatch
-        for row in range(table.rowCount()):
+        for row in range(self.ui.tableWatch.rowCount()):
             row_data = []
-            for col in range(table.columnCount()):
-                item = table.item(row, col)
+            for col in range(self.ui.tableWatch.columnCount()):
+                item = self.ui.tableWatch.item(row, col)
                 if item is not None:
                     row_data.append(item.text())
                 else:
@@ -389,7 +385,8 @@ class AnalyserWindow(SubWindow):
 
         # 为每个通道创建复选框，默认勾选
         for channel in channels:
-            checkbox = QCheckBox(f"Channel-{channel}")
+            content = self.tr("Channel")
+            checkbox = QCheckBox(f"{content}-{channel}")
             checkbox.setChecked(True)
             checkbox.setStyleSheet("margin-left: 16px;")
             checkbox.stateChanged.connect(self.on_channel_filter_changed)

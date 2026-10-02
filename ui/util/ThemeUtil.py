@@ -24,6 +24,7 @@ class ThemeUtil:
         if is_dark == cls.is_dark_theme():
             # 主题未变化，不做任何处理
             return
+
         new_theme_qss_name = DARK_THEME if is_dark else LIGHT_THEME
         cls.__store_theme__(new_theme_qss_name)
         if cls.on_theme_changed:

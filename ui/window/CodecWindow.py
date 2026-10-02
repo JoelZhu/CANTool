@@ -20,6 +20,9 @@ class CodecWindow(SubWindow):
         self.ui.buttonParse.clicked.connect(self.on_parse)
         self.ui.buttonGenerate.clicked.connect(self.on_generate)
 
+    def on_language_changed(self):
+        self.ui.retranslateUi(self)
+
     def mark_as_required(self) -> List[QLabel]:
         return [self.main_ui.labelFormat, self.main_ui.labelStartBit, self.main_ui.labelBitLength,
                 self.main_ui.labelFactor, self.main_ui.labelOffset]
@@ -27,14 +30,14 @@ class CodecWindow(SubWindow):
     def on_parse(self):
         try:
             self.__parse_inner__()
-        except Exception as e:
-            QMessageBox.critical(self, "Parse got exception.", str(e))
+        except Exception as exception:
+            QMessageBox.critical(self, "Parse got exception.", str(exception))
 
     def on_generate(self):
         try:
             self.__generate_inner__()
-        except Exception as e:
-            QMessageBox.critical(self, "Generate got exception.", str(e))
+        except Exception as exception:
+            QMessageBox.critical(self, "Generate got exception.", str(exception))
 
     def __parse_inner__(self):
         # 1. 获取矩阵信息

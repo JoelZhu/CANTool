@@ -1,5 +1,7 @@
 from typing import List
 
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import QEvent
 from PyQt5.QtWidgets import QWidget, QLabel
 
 from core.entity.SignalData import SignalData
@@ -15,6 +17,31 @@ def set_label_as_required(label: QLabel, visible: bool):
     label.style().polish(label)
 
 
+def apply_table_column_ratios(table: QtWidgets.QTableWidget, column_ratio):
+    viewport_width = table.viewport().width()
+    # 如果宽度无效（例如表格还未显示），直接返回
+    if viewport_width <= 0:
+        return
+
+    total_ratio = sum(column_ratio.values())
+    # 先计算每列的理论宽度（浮点数）
+    widths_float = {column: viewport_width * ratio / total_ratio for column, ratio in column_ratio.items()}
+
+    # 向下取整，并计算剩余像素
+    widths_int = {column: int(width) for column, width in widths_float.items()}
+    remainder = viewport_width - sum(widths_int.values())
+
+    # 将剩余像素按比例分配给前几列
+    # 这里按顺序给前 remainder 列各加 1 像素
+    columns = list(column_ratio.keys())
+    for index in range(remainder):
+        widths_int[columns[index % len(columns)]] += 1
+
+    # 应用列宽
+    for column, width in widths_int.items():
+        table.setColumnWidth(column, width)
+
+
 class SubWindow(QWidget):
     main_ui: Ui_MainWindow
     required_parameters: list
@@ -23,6 +50,12 @@ class SubWindow(QWidget):
         super().__init__()
         self.main_ui = main_ui
         self.required_parameters = list()
+
+    def changeEvent(self, event):
+        if event.type() == QEvent.LanguageChange:
+            self.main_ui.retranslateUi(self)
+            self.on_language_changed()
+        super().changeEvent(event)
 
     def on_window_changed(self):
         # 先全部不显示星标
@@ -40,6 +73,9 @@ class SubWindow(QWidget):
             for required_label in self.mark_as_required():
                 set_label_as_required(required_label, True)
                 self.required_parameters.append(required_label)
+
+    def on_language_changed(self):
+        pass
 
     def mark_as_required(self) -> List[QLabel]:
         pass

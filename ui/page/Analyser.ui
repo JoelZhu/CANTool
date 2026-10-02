@@ -37,12 +37,12 @@
                 <widget class="QComboBox" name="comboDirection">
                     <item>
                         <property name="text">
-                            <string>TX</string>
+                            <string notr="true">TX</string>
                         </property>
                     </item>
                     <item>
                         <property name="text">
-                            <string>RX</string>
+                            <string notr="true">RX</string>
                         </property>
                     </item>
                 </widget>
@@ -79,28 +79,12 @@
             <!-- 第 2 行：关注列表 -->
             <item row="2" column="0" colspan="8">
                 <widget class="QTableWidget" name="tableWatch">
-                    <property name="columnCount">
-                        <number>9</number>
-                    </property>
                     <attribute name="horizontalHeaderVisible">
                         <bool>true</bool>
                     </attribute>
                     <attribute name="verticalHeaderVisible">
                         <bool>true</bool>
                     </attribute>
-                    <property name="horizontalHeaderLabels">
-                        <stringlist>
-                            <string>CAN_ID</string>
-                            <string>Format</string>
-                            <string>Direction</string>
-                            <string>SignalName</string>
-                            <string>StartBit</string>
-                            <string>BitLength</string>
-                            <string>Factor</string>
-                            <string>Offset</string>
-                            <string>Remove</string>
-                        </stringlist>
-                    </property>
                 </widget>
             </item>
 
@@ -168,7 +152,7 @@
             <item row="6" column="0" colspan="8">
                 <widget class="QLabel" name="labelResult">
                     <property name="text">
-                        <string>【Analyser Result】</string>
+                        <string>【Analysis Result】</string>
                     </property>
                 </widget>
             </item>
@@ -207,25 +191,12 @@
             <!-- 第 8 行：结果表格 -->
             <item row="8" column="0" colspan="8">
                 <widget class="QTableWidget" name="tableResult">
-                    <property name="columnCount">
-                        <number>6</number>
-                    </property>
                     <attribute name="horizontalHeaderVisible">
                         <bool>true</bool>
                     </attribute>
                     <attribute name="verticalHeaderVisible">
                         <bool>true</bool>
                     </attribute>
-                    <property name="horizontalHeaderLabels">
-                        <stringlist>
-                            <string>Timestamp</string>
-                            <string>Channel</string>
-                            <string>Direction</string>
-                            <string>SignalName</string>
-                            <string>RawValue</string>
-                            <string>PhysicalValue</string>
-                        </stringlist>
-                    </property>
                     <!-- 填充剩余部分 -->
                     <property name="sizePolicy">
                         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">

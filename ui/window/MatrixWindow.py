@@ -22,11 +22,14 @@ class MatrixWindow(SubWindow):
         self.ui.tableMatrix.verticalHeader().setDefaultSectionSize(36)
         # 让所有列平分表格宽度
         self.ui.tableMatrix.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.ui.tableMatrix.setHorizontalHeaderLabels([str(f"Bit{i}") for i in range(7, -1, -1)])
+        self.ui.tableMatrix.setHorizontalHeaderLabels([str(f"Bit{index}") for index in range(7, -1, -1)])
         # 禁止表格编辑
         self.ui.tableMatrix.setEditTriggers(QTableWidget.NoEditTriggers)
 
         self.ui.buttonRefresh.clicked.connect(self.on_refresh_matrix)
+
+    def on_language_changed(self):
+        self.ui.retranslateUi(self)
 
     def mark_as_required(self) -> List[QLabel]:
         return [self.main_ui.labelFormat, self.main_ui.labelBytes, self.main_ui.labelStartBit,
@@ -35,8 +38,8 @@ class MatrixWindow(SubWindow):
     def on_refresh_matrix(self):
         try:
             self.__refresh_matrix_inner__()
-        except Exception as e:
-            QMessageBox.critical(self, "Refresh got exception.", str(e))
+        except Exception as exception:
+            QMessageBox.critical(self, "Refresh got exception.", str(exception))
 
     def __refresh_matrix_inner__(self):
         # 1. 获取矩阵信息
@@ -48,27 +51,27 @@ class MatrixWindow(SubWindow):
     def __update_matrix_table__(self, fmt: Format, byte_length: int, start_bit: int, bit_length: int):
         # 1. 获取需要显示的位信息
         positions = MessageParser.get_all_positions(fmt, byte_length, start_bit, bit_length)
-        if any(pos < 0 for pos in positions):
+        if any(position < 0 for position in positions):
             raise ValueError("Illegal matrix information.")
 
         # 2. 更新字节信息
         self.ui.tableMatrix.setRowCount(byte_length)
-        self.ui.tableMatrix.setVerticalHeaderLabels([f"Byte{i}" for i in range(byte_length)])
+        self.ui.tableMatrix.setVerticalHeaderLabels([f"Byte{index}" for index in range(byte_length)])
 
         # 3. 刷新表格内容
         for row in range(byte_length):
-            for col in range(8):
-                pos = row * 8 + (7 - col)
-                item = QTableWidgetItem(f"Bit{pos}")
+            for column in range(8):
+                position = row * 8 + (7 - column)
+                item = QTableWidgetItem(f"Bit{position}")
 
-                if pos == start_bit:
+                if position == start_bit:
                     item.setForeground(Qt.black)
                     item.setBackground(Qt.green)
-                elif pos in positions:
+                elif position in positions:
                     item.setForeground(Qt.white)
                     item.setBackground(Qt.red)
                 else:
                     item.setForeground(Qt.black)
                     item.setBackground(Qt.lightGray)
                 item.setTextAlignment(Qt.AlignCenter)
-                self.ui.tableMatrix.setItem(row, col, item)
+                self.ui.tableMatrix.setItem(row, column, item)

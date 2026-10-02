@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtWidgets import QFileDialog
 
 from core.ConvertHelper import ConvertHelper
+from core.Util import trigger_file_select, FileType
 from ui.dialog.ConvertDialog import ConvertDialog
 from ui.page.Converter import Ui_ConverterWidget
 from ui.page.Home import Ui_MainWindow
@@ -29,10 +29,11 @@ class ConverterWindow(SubWindow):
         self.helper.on_close_event()
         event.accept()
 
+    def on_language_changed(self):
+        self.ui.retranslateUi(self)
+
     def on_browse_clicked(self):
-        file_path, _ = QFileDialog.getOpenFileName(
-            self, "Select a BLF file", "", "BLF Files (*.blf);;All Files (*)"
-        )
+        file_path = trigger_file_select(self, FileType.BLF)
         if file_path:
             self.ui.editFilePath.setText(file_path)
 
@@ -50,7 +51,7 @@ class ConverterWindow(SubWindow):
         QCoreApplication.processEvents()
         # 创建对话框
         self.result_dialog = ConvertDialog(self)
-        self.result_dialog.set_text("File converting...")
+        self.result_dialog.set_text(self.tr("File converting..."))
         self.result_dialog.prepare_blf_path(blf_path)
         self.result_dialog.show()
         # 注册回调
@@ -64,7 +65,7 @@ class ConverterWindow(SubWindow):
 
     def on_finished(self):
         if self.result_dialog:
-            self.result_dialog.set_text("Succeed！", is_finished=True)
+            self.result_dialog.set_text(self.tr("Succeed！"), is_finished=True)
 
     def on_error(self, error_msg):
         if self.result_dialog:
@@ -73,9 +74,10 @@ class ConverterWindow(SubWindow):
     def __update_progress_text__(self, progress: int):
         if self.result_dialog:
             if progress < 0:
-                self.result_dialog.set_text("Convert preparing...")
+                self.result_dialog.set_text(self.tr("Convert preparing..."))
             else:
-                self.result_dialog.set_text(f"Converting, progress: {progress}%")
+                content = self.tr("Converting, progress")
+                self.result_dialog.set_text(f"{content}: {progress}%")
 
     def __get_blf_path__(self) -> str:
         return self.ui.editFilePath.text().strip()
